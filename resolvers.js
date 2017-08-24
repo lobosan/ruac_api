@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import _ from 'lodash'
 
-import { requiresAuth, requiresAdmin } from './permissions'
+import { requiresAuth } from './permissions'
 
 export default {
   Query: {
@@ -23,7 +23,7 @@ export default {
     allUsers: (parent, args, { models }) => models.User.find()
   },
   Mutation: {
-    createPost: requiresAdmin.createResolver(async (parent, args, { models }) => {
+    createPost: requiresAuth.createResolver(async (parent, args, { models }) => {
       const post = await new models.Post(args).save()
       return post
     }),
