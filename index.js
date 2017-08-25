@@ -40,7 +40,6 @@ app.use(
   })
 )
 
-// bodyParser is needed for POST requests
 app.use(
   '/graphql',
   bodyParser.json(),
