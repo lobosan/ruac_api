@@ -33,7 +33,6 @@ const addUser = async (req, res, next) => {
 
 app.use(addUser)
 
-// GraphiQL is reachable on http://localhost:3000/graphiql
 app.use(
   '/graphiql',
   graphiqlExpress({
