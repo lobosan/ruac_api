@@ -18,7 +18,7 @@ const SECRET = process.env.SECRET
 
 const app = express()
 
-const addUser = async req => {
+const addUser = async (req, res, next) => {
   const token = req.headers.authorization
   if (token) {
     try {
@@ -28,7 +28,7 @@ const addUser = async req => {
       console.log('JWT verification token error:', error)
     }
   }
-  req.next()
+  next()
 }
 
 app.use(addUser)
