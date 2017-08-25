@@ -9,14 +9,14 @@ import models from './models'
 import typeDefs from './schema'
 import resolvers from './resolvers'
 
+const SECRET = process.env.SECRET
+const PORT = 3000
+const app = express()
+
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers
 })
-
-const SECRET = process.env.SECRET
-
-const app = express()
 
 const addUser = async (req, res, next) => {
   const token = req.headers.authorization
@@ -55,4 +55,6 @@ app.use(
   }))
 )
 
-app.listen(3000)
+app.listen(PORT, () => {
+  console.log(`GraphQL server listening on http://localhost:${PORT}/graphiql`)
+})
