@@ -27,36 +27,37 @@ export default {
       const post = await new models.Post(args).save()
       return post
     }),
-    signup: async (parent, args, { models }) => {
+    signUp: async (parent, args, { models }) => {
       const user = args
-      user.password = await bcrypt.hash(user.password, 12)
+      user.contrasena = await bcrypt.hash(user.contrasena, 12)
       try {
         const newUser = await new models.User(user).save()
         return newUser
       } catch (error) {
-        if (error.message.includes('username')) {
-          throw new Error('Username in use')
-        }
-        if (error.message.includes('email')) {
-          throw new Error('Email in use')
+        if (error.message.includes('users.$cedula_1 dup key')) {
+          throw new Error('La cédula ingresada ya está registrada')
+        } else if (error.message.includes('users.$email_1 dup key')) {
+          throw new Error('El email ingresado ya está registrado')
+        } else {
+          throw new Error(error.message)
         }
       }
     },
-    login: async (parent, { email, password }, { models, SECRET }) => {
-      const user = await models.User.findOne({ email })
+    signIn: async (parent, { cedula, contrasena }, { models, SECRET }) => {
+      const user = await models.User.findOne({ cedula })
       if (!user) {
-        throw new Error('Not user with that email')
+        throw new Error('La cédula ingresada no está registrada')
       }
 
-      const valid = await bcrypt.compare(password, user.password)
+      const valid = await bcrypt.compare(contrasena, user.contrasena)
       if (!valid) {
-        throw new Error('Incorrect password')
+        throw new Error('Contraseña incorrecta')
       }
 
       const token = jwt.sign(
-        { user: _.pick(user, ['_id', 'username', 'role']) },
+        { user: _.pick(user, ['_id', 'cedula', 'role']) },
         SECRET,
-        { expiresIn: '1y' }
+        { expiresIn: '1m' }
       )
 
       return token

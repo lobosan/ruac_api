@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express'
 import { makeExecutableSchema } from 'graphql-tools'
 import jwt from 'jsonwebtoken'
+import cors from 'cors'
 
 import './dotenv'
 import models from './models'
@@ -25,11 +26,13 @@ const addUser = async (req, res, next) => {
       const { user } = await jwt.verify(token, SECRET)
       req.user = user
     } catch (error) {
-      console.log('JWT verification token error:', error)
+      console.log('JWT verification token error')
     }
   }
   next()
 }
+
+app.use(cors('*'))
 
 app.use(addUser)
 

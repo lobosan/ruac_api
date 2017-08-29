@@ -6,8 +6,10 @@ type Post {
 
 type User {
   _id: ID!
-  username: String!
+  cedula: String!
+  apellidosNombres: String!
   email: String!
+  fechaNacimiento: String!
 }
 
 type Query {
@@ -19,7 +21,7 @@ type Query {
 
 type Mutation {
   createPost(name: String!): Post
-  signup(username: String!, email: String!, password: String!): User!
-  login(email: String!, password: String!): String!
+  signUp(cedula: String!, apellidosNombres: String!, email: String!, fechaNacimiento: String!, contrasena: String!): User!
+  signIn(cedula: String!, contrasena: String!): String!
 }
 `
