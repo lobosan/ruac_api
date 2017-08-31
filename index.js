@@ -2,8 +2,8 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express'
 import { makeExecutableSchema } from 'graphql-tools'
-import jwt from 'jsonwebtoken'
 import cors from 'cors'
+import jwt from 'jsonwebtoken'
 
 import './dotenv'
 import models from './models'
@@ -12,18 +12,17 @@ import resolvers from './resolvers'
 
 const SECRET = process.env.SECRET
 const PORT = 3000
-const app = express()
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers
 })
 
-const addUser = async (req, res, next) => {
-  const token = req.headers.authorization
-  if (token) {
+const addUser = (req, res, next) => {
+  const token = req.headers['token']
+  if (token !== 'null') {
     try {
-      const { user } = await jwt.verify(token, SECRET)
+      const { user } = jwt.verify(token, SECRET)
       req.user = user
     } catch (error) {
       console.log('JWT verification token error')
@@ -32,8 +31,9 @@ const addUser = async (req, res, next) => {
   next()
 }
 
-app.use(cors('*'))
+const app = express()
 
+app.use(cors('*'))
 app.use(addUser)
 
 app.use(

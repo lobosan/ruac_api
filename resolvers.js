@@ -57,7 +57,7 @@ export default {
       const token = jwt.sign(
         { user: _.pick(user, ['_id', 'cedula', 'role']) },
         SECRET,
-        { expiresIn: '1m' }
+        { expiresIn: '7d' }
       )
 
       return token

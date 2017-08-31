@@ -20,7 +20,7 @@ type Query {
 }
 
 type Mutation {
-  createPost(name: String!): Post
+  createPost(name: String!): Post!
   signUp(cedula: String!, apellidosNombres: String!, email: String!, fechaNacimiento: String!, contrasena: String!): User!
   signIn(cedula: String!, contrasena: String!): String!
 }
