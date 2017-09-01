@@ -20,7 +20,7 @@ const schema = makeExecutableSchema({
 
 const addUser = (req, res, next) => {
   const token = req.headers['token']
-  if (token !== 'null') {
+  if (token) {
     try {
       const { user } = jwt.verify(token, SECRET)
       req.user = user
