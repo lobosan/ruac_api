@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import _ from 'lodash'
 
+import transporter from './email'
 import { requiresAuth } from './permissions'
 
 export default {
@@ -27,12 +28,33 @@ export default {
       const post = await new models.Post(args).save()
       return post
     }),
-    signUp: async (parent, args, { models }) => {
-      const user = args
-      user.contrasena = await bcrypt.hash(user.contrasena, 12)
+    signUp: async (parent, args, { models, EMAIL_SECRET }) => {
+      const hashedPassword = await bcrypt.hash(args.contrasena, 12)
       try {
-        const newUser = await new models.User(user).save()
-        return newUser
+        const user = await new models.User({
+          ...args,
+          contrasena: hashedPassword
+        }).save()
+
+        const emailToken = await jwt.sign(
+          { user: _.pick(user, '_id') },
+          EMAIL_SECRET,
+          { expiresIn: '1d' }
+        )
+
+        const url = `http://localhost:3000/confirmacion/${emailToken}`
+        const mailOptions = {
+          to: args.email,
+          subject: 'Confirmar email',
+          html: `
+            Estimado artista/gestor cultural, para continuar con su proceso de registro por favor dar click en el siguiente enlace:
+            <br><br><a href="${url}">Confirmar mi email e iniciar sesión ></a>
+          `
+        }
+        transporter.sendMail(mailOptions, (error) => {
+          if (error) throw new Error(error)
+        })
+        return user
       } catch (error) {
         if (error.message.includes('users.$cedula_1 dup key')) {
           throw new Error('La cédula ingresada ya está registrada')
@@ -49,12 +71,16 @@ export default {
         throw new Error('La cédula ingresada no está registrada')
       }
 
+      if (!user.confirmed) {
+        throw new Error('Su email no ha sido confirmado. Por favor revise su bandeja de entrada o regístrese nuevamente')
+      }
+
       const valid = await bcrypt.compare(contrasena, user.contrasena)
       if (!valid) {
         throw new Error('Contraseña incorrecta')
       }
 
-      const token = jwt.sign(
+      const token = await jwt.sign(
         { user: _.pick(user, ['_id', 'cedula', 'role']) },
         SECRET,
         { expiresIn: '7d' }

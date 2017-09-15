@@ -38,7 +38,11 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    default: 'artist'
+    default: 'artista'
+  },
+  confirmed: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

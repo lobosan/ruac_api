@@ -10,19 +10,30 @@ import models from './models'
 import typeDefs from './schema'
 import resolvers from './resolvers'
 
-const SECRET = process.env.SECRET
+import dinardap from './soap-client'
+
+dinardap('1718896580')
+  .then(response => {
+    console.log(response)
+  })
+  .catch(error => {
+    console.log(error)
+  })
+
 const PORT = 3000
+const SECRET = process.env.SECRET
+const EMAIL_SECRET = process.env.EMAIL_SECRET
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers
 })
 
-const addUser = (req, res, next) => {
+const addUser = async (req, res, next) => {
   const token = req.headers['token']
   if (token) {
     try {
-      const { user } = jwt.verify(token, SECRET)
+      const { user } = await jwt.verify(token, SECRET)
       req.user = user
     } catch (error) {
       console.log('JWT verification token error')
@@ -35,6 +46,16 @@ const app = express()
 
 app.use(cors('*'))
 app.use(addUser)
+
+app.get('/confirmacion/:token', async (req, res) => {
+  try {
+    const { user: { _id } } = await jwt.verify(req.params.token, EMAIL_SECRET)
+    await models.User.update(_id, { $set: { confirmed: true } })
+  } catch (error) {
+    res.send(error)
+  }
+  return res.redirect('http://localhost:8080/inicio-sesion?verificado')
+})
 
 app.use(
   '/graphiql',
@@ -51,6 +72,7 @@ app.use(
     context: {
       models,
       SECRET,
+      EMAIL_SECRET,
       user: req.user
     }
   }))
