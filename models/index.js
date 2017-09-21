@@ -10,9 +10,9 @@ mongoose.connect(process.env.MONGO_URI, {
   reconnectTries: Number.MAX_VALUE,
   useMongoClient: true
 }).then(response => {
-  if (response) console.log('Connected to MongoLab instance')
+  console.log('Connected to MongoLab instance')
 }).catch(error => {
-  if (error) console.log('Error: Not able to connect to MongoLab')
+  console.log('Error: Not able to connect to MongoLab', error)
 })
 
 const models = {

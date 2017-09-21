@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import _ from 'lodash'
 
+import dinardap from './dinardap'
 import transporter from './email'
 import { requiresAuth } from './permissions'
 
@@ -21,7 +22,11 @@ export default {
       }
       return null
     },
-    allUsers: (parent, args, { models }) => models.User.find()
+    allUsers: (parent, args, { models }) => models.User.find(),
+    dinardap: async (parent, { cedula }) => {
+      const soapData = await dinardap(cedula)
+      return soapData
+    }
   },
   Mutation: {
     createPost: requiresAuth.createResolver(async (parent, args, { models }) => {

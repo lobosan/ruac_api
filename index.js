@@ -10,16 +10,6 @@ import models from './models'
 import typeDefs from './schema'
 import resolvers from './resolvers'
 
-import dinardap from './soap-client'
-
-dinardap('1718896580')
-  .then(response => {
-    console.log(response)
-  })
-  .catch(error => {
-    console.log(error)
-  })
-
 const PORT = 3000
 const SECRET = process.env.SECRET
 const EMAIL_SECRET = process.env.EMAIL_SECRET

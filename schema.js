@@ -12,11 +12,25 @@ type User {
   fechaNacimiento: String!
 }
 
+type Dinardap {
+  nombre: String!
+  fechaNacimiento: String!
+  provincia: String!
+  canton: String!
+  parroquia: String!
+  nacionalidad: String!
+  sexo: String!
+  tercerNivel: String
+  cuartoNivel: String
+  estadoAfiliado: String
+}
+
 type Query {
   post(_id: ID!): Post
   allPosts: [Post]
   loggedInUser: User
   allUsers: [User!]!
+  dinardap(cedula: String!): Dinardap!
 }
 
 type Mutation {
