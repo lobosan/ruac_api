@@ -38,13 +38,16 @@ app.use(cors('*'))
 app.use(addUser)
 
 app.get('/confirmacion/:token', async (req, res) => {
+  let verificado = false
   try {
     const { user: { _id } } = await jwt.verify(req.params.token, EMAIL_SECRET)
     await models.User.update(_id, { $set: { confirmed: true } })
+    verificado = true
   } catch (error) {
-    res.send(error)
+    console.log('Error al verificar email', error)
+    verificado = false
   }
-  return res.redirect('http://localhost:8080/inicio-sesion?verificado')
+  res.redirect(`http://localhost:8080/inicio-sesion?verificado=${verificado}`)
 })
 
 app.use(
