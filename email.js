@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import hbs from 'nodemailer-express-handlebars'
 
 const transporter = nodemailer.createTransport({
   host: 'mail.culturaypatrimonio.gob.ec',
@@ -11,5 +12,15 @@ const transporter = nodemailer.createTransport({
 }, {
   from: '"RUAC" <ruac-informativo@culturaypatrimonio.gob.ec>'
 })
+
+const options = {
+  viewEngine: {
+    extname: '.hbs'
+  },
+  viewPath: 'emails',
+  extName: '.hbs'
+}
+
+transporter.use('compile', hbs(options))
 
 export default transporter

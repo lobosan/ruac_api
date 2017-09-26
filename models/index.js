@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 
-import postSchema from './postSchema'
 import userSchema from './userSchema'
 
 mongoose.Promise = global.Promise
@@ -16,7 +15,6 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 
 const models = {
-  Post: mongoose.model('Post', postSchema),
   User: mongoose.model('User', userSchema)
 }
 

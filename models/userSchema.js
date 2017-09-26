@@ -7,34 +7,53 @@ const userSchema = new Schema({
     type: String,
     index: true,
     unique: true,
-    required: [true, 'La cédula es obligatoria'],
-    minlength: [10, 'La cédula debe ser de 10 dígitos'],
-    trim: true
-  },
-  apellidosNombres: {
-    type: String,
-    required: [true, 'Sus apellidos y nombres son obligatorios'],
-    maxlength: [250, 'Su nombre tiene demasiados caracteres'],
-    uppercase: true,
+    required: true,
+    minlength: 10,
     trim: true
   },
   email: {
     type: String,
-    unique: [true, 'El email ingresado ya está en uso'],
-    required: [true, 'El email es obligatorio'],
-    maxlength: [100, 'Su email tiene demasiados caracteres'],
-    trim: true
-  },
-  fechaNacimiento: {
-    type: String,
-    required: [true, 'Su fecha de nacimiento es obligatoria'],
-    maxlength: [100, 'Su fecha de na tiene demasiados caracteres'],
+    unique: true,
+    required: true,
+    maxlength: 100,
     trim: true
   },
   contrasena: {
     type: String,
     required: true,
-    minlength: [9, 'La contraseña debe tener al menos 9 caracteres']
+    minlength: 9
+  },
+  nombre: {
+    type: String,
+    required: true
+  },
+  fechaNacimiento: {
+    type: String,
+    required: true
+  },
+  lugarNacimiento: {
+    type: String,
+    required: true
+  },
+  nacionalidad: {
+    type: String,
+    required: true
+  },
+  sexo: {
+    type: String,
+    required: true
+  },
+  tercerNivel: {
+    type: String,
+    required: false
+  },
+  cuartoNivel: {
+    type: String,
+    required: false
+  },
+  estadoAfiliado: {
+    type: String,
+    required: false
   },
   role: {
     type: String,

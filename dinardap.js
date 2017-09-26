@@ -70,11 +70,6 @@ const interoperador = (paquete, cedula) => {
               if (obj.campo === 'fechaNacimiento') {
                 const fecha = obj.valor.split('/')
                 institucion['fechaNacimiento'] = `${fecha[2]}-${fecha[1]}-${fecha[0]}`
-              } else if (obj.campo === 'lugarNacimiento') {
-                const lugar = obj.valor.split('/')
-                institucion['provincia'] = lugar[0]
-                institucion['canton'] = lugar[1]
-                institucion['parroquia'] = lugar[2]
               } else {
                 institucion[obj.campo] = obj.valor
               }
