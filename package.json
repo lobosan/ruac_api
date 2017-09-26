@@ -4,7 +4,9 @@
   "description": "API del Registro Único de Artistas y Gestores Culturales",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js"
+    "start": "nodemon --exec babel-node index.js",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "Santiago Galindo",
   "license": "MIT",
@@ -22,7 +24,8 @@
     "mongoose": "^4.11.7",
     "nodemailer": "^4.1.0",
     "restler": "^3.4.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "snyk": "^1.41.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -36,5 +39,6 @@
     "eslint-plugin-standard": "^3.0.1",
     "nodemon": "^1.11.0",
     "standard": "^10.0.3"
-  }
+  },
+  "snyk": true
 }
