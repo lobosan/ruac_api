@@ -36,7 +36,7 @@ export default {
           subject: 'Confirmar email',
           template: 'welcome',
           attachments: [{
-            path: 'emails/ruac.jpg',
+            path: 'emails/ruac.png',
             cid: 'ruac-logo@culturaypatrimonio.gob.ec'
           }],
           context: { url: `http://localhost:3000/confirmacion/${emailToken}` }
