@@ -41,7 +41,7 @@ app.get('/confirmacion/:token', async (req, res) => {
   let verificado = false
   try {
     const { user: { _id } } = await jwt.verify(req.params.token, EMAIL_SECRET)
-    await models.User.update(_id, { $set: { confirmed: true } })
+    await models.User.findOneAndUpdate({ _id }, { $set: { confirmed: true } })
     verificado = true
   } catch (error) {
     console.log('Error al verificar email', error)

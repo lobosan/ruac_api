@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import _ from 'lodash'
 
 import dinardap from './dinardap'
-import transporter from './email'
+import { transporter, verifyTransporter } from './email'
 import { requiresAuth } from './permissions'
 
 export default {
@@ -25,13 +25,14 @@ export default {
     signUp: async (parent, args, { models, EMAIL_SECRET }) => {
       const hashedPassword = await bcrypt.hash(args.contrasena, 12)
       try {
+        await verifyTransporter()
         const user = await new models.User({ ...args, contrasena: hashedPassword }).save()
         const emailToken = await jwt.sign(
           { user: _.pick(user, '_id') },
           EMAIL_SECRET,
           { expiresIn: '1d' }
         )
-        transporter.sendMail({
+        await transporter.sendMail({
           to: args.email,
           subject: 'Confirmar email',
           template: 'welcome',
@@ -40,8 +41,6 @@ export default {
             cid: 'ruac-logo@culturaypatrimonio.gob.ec'
           }],
           context: { url: `http://localhost:3000/confirmacion/${emailToken}` }
-        }, (error) => {
-          if (error) throw new Error(error)
         })
         return user
       } catch (error) {
@@ -49,6 +48,8 @@ export default {
           throw new Error('La cédula ingresada ya está registrada')
         } else if (error.message.includes('users.$email_1 dup key')) {
           throw new Error('El email ingresado ya está registrado')
+        } else if (error.message.includes('Invalid login: 535 5.7.8')) {
+          throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')
         } else {
           throw new Error(error.message)
         }
