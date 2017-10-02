@@ -26,10 +26,23 @@ type Dinardap {
   estadoAfiliado: String
 }
 
+type Provincia {
+  codigoProvincia: String!
+  provincia: String!
+}
+
+type Canton {
+  codigoProvincia: String!
+  codigoCanton: String!
+  canton: String!
+}
+
 type Query {
   loggedInUser: User!
   allUsers: [User!]!
   dinardap(cedula: String!): Dinardap!
+  provincias: [Provincia!]!
+  cantones(codigoProvincia: String!): [Canton!]!
 }
 
 type Mutation {

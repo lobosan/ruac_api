@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 
 import userSchema from './userSchema'
+import provinciaSchema from './provinciaSchema'
+import cantonSchema from './cantonSchema'
 
 mongoose.Promise = global.Promise
 
@@ -15,7 +17,9 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 
 const models = {
-  User: mongoose.model('User', userSchema)
+  Users: mongoose.model('Users', userSchema),
+  Provincias: mongoose.model('Provincias', provinciaSchema),
+  Cantones: mongoose.model('Cantones', cantonSchema)
 }
 
 export default models

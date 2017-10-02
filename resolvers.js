@@ -9,16 +9,24 @@ import { requiresAuth } from './permissions'
 export default {
   Query: {
     loggedInUser: requiresAuth.createResolver(async (parent, args, { models, user }) => {
-      const loggedInUser = await models.User.findOne({ _id: user._id })
+      const loggedInUser = await models.Users.findOne({ _id: user._id })
       return loggedInUser
     }),
     allUsers: async (parent, args, { models }) => {
-      const users = await models.User.find()
+      const users = await models.Users.find()
       return users
     },
     dinardap: async (parent, { cedula }) => {
       const data = await dinardap(cedula)
       return data
+    },
+    provincias: async (parent, args, { models }) => {
+      const provincias = await models.Provincias.find()
+      return provincias
+    },
+    cantones: async (parent, { codigoProvincia }, { models }) => {
+      const cantones = await models.Cantones.find({ codigoProvincia })
+      return cantones
     }
   },
   Mutation: {
@@ -26,7 +34,7 @@ export default {
       const hashedPassword = await bcrypt.hash(args.contrasena, 12)
       try {
         await verifyTransporter()
-        const user = await new models.User({ ...args, contrasena: hashedPassword }).save()
+        const user = await new models.Users({ ...args, contrasena: hashedPassword }).save()
         const emailToken = await jwt.sign(
           { user: _.pick(user, '_id') },
           EMAIL_SECRET,
@@ -40,7 +48,7 @@ export default {
             path: 'emails/ruac.png',
             cid: 'ruac-logo@culturaypatrimonio.gob.ec'
           }],
-          context: { url: `http://localhost:3000/confirmacion/${emailToken}` }
+          context: { url: `http://172.17.6.74:3000/confirmacion/${emailToken}` }
         })
         return user
       } catch (error) {
@@ -56,7 +64,7 @@ export default {
       }
     },
     signIn: async (parent, { cedula, contrasena }, { models, SECRET }) => {
-      const user = await models.User.findOne({ cedula })
+      const user = await models.Users.findOne({ cedula })
       if (!user) {
         throw new Error('La cédula ingresada no está registrada')
       }

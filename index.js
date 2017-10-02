@@ -41,13 +41,13 @@ app.get('/confirmacion/:token', async (req, res) => {
   let verificado = false
   try {
     const { user: { _id } } = await jwt.verify(req.params.token, EMAIL_SECRET)
-    await models.User.findOneAndUpdate({ _id }, { $set: { confirmed: true } })
+    await models.Users.findOneAndUpdate({ _id }, { $set: { confirmed: true } })
     verificado = true
   } catch (error) {
     console.log('Error al verificar email', error)
     verificado = false
   }
-  res.redirect(`http://localhost:8080/inicio-sesion?verificado=${verificado}`)
+  res.redirect(`http://172.17.6.74:8080/inicio-sesion?verificado=${verificado}`)
 })
 
 app.use(
