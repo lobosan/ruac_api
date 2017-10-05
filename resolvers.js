@@ -9,16 +9,20 @@ import { requiresAuth } from './permissions'
 export default {
   Query: {
     loggedInUser: requiresAuth.createResolver(async (parent, args, { models, user }) => {
-      const loggedInUser = await models.Users.findOne({ _id: user._id })
+      const loggedInUser = await models.Usuarios.findOne({ _id: user._id })
       return loggedInUser
     }),
     allUsers: async (parent, args, { models }) => {
-      const users = await models.Users.find()
+      const users = await models.Usuarios.find()
       return users
     },
     dinardap: async (parent, { cedula }) => {
       const data = await dinardap(cedula)
       return data
+    },
+    paises: async (parent, args, { models }) => {
+      const paises = await models.Paises.find()
+      return paises
     },
     provincias: async (parent, args, { models }) => {
       const provincias = await models.Provincias.find()
@@ -34,7 +38,7 @@ export default {
       const hashedPassword = await bcrypt.hash(args.contrasena, 12)
       try {
         await verifyTransporter()
-        const user = await new models.Users({ ...args, contrasena: hashedPassword }).save()
+        const user = await new models.Usuarios({ ...args, contrasena: hashedPassword }).save()
         const emailToken = await jwt.sign(
           { user: _.pick(user, '_id') },
           EMAIL_SECRET,
@@ -64,11 +68,11 @@ export default {
       }
     },
     signIn: async (parent, { cedula, contrasena }, { models, SECRET }) => {
-      const user = await models.Users.findOne({ cedula })
+      const user = await models.Usuarios.findOne({ cedula })
       if (!user) {
         throw new Error('La cédula ingresada no está registrada')
       }
-      if (!user.confirmed) {
+      if (!user.emailConfirmed) {
         throw new Error('Su email no ha sido confirmado. Por favor revise su bandeja de entrada o regístrese nuevamente')
       }
       const valid = await bcrypt.compare(contrasena, user.contrasena)
@@ -81,6 +85,48 @@ export default {
         { expiresIn: '7d' }
       )
       return token
+    },
+    updateProfile: async (parent, { cedula, tipoAfiliado, email, telefonoFijo, telefonoCelular, paisDomicilio, provinciaDomicilio, cantonDomicilio, nombreArtistico, tipoActividad, actividadPrincipal, actividadSecundaria, postulacionesFinanciamiento, otrasEntidadesApoyo, obrasRegistradasIEPI, perteneceOrgCultural, logrosAlcanzados, proyectosCulturales, formacionCapacitacion, webBlog, youtube, facebook, twitter, declaracion }, { models }) => {
+      try {
+        const user = await models.Usuarios.findOneAndUpdate({ cedula }, {
+          $set: {
+            tipoAfiliado,
+            email,
+            telefonoFijo,
+            telefonoCelular,
+            paisDomicilio,
+            provinciaDomicilio,
+            cantonDomicilio,
+            nombreArtistico,
+            tipoActividad,
+            actividadPrincipal,
+            actividadSecundaria,
+            postulacionesFinanciamiento,
+            otrasEntidadesApoyo,
+            obrasRegistradasIEPI,
+            perteneceOrgCultural,
+            logrosAlcanzados,
+            proyectosCulturales,
+            formacionCapacitacion,
+            webBlog,
+            youtube,
+            facebook,
+            twitter,
+            declaracion
+          }
+        })
+        return user
+      } catch (error) {
+        if (error.message.includes('users.$cedula_1 dup key')) {
+          throw new Error('La cédula ingresada ya está registrada')
+        } else if (error.message.includes('users.$email_1 dup key')) {
+          throw new Error('El email ingresado ya está registrado')
+        } else if (error.message.includes('Invalid login: 535 5.7.8')) {
+          throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')
+        } else {
+          throw new Error(error.message)
+        }
+      }
     }
   }
 }

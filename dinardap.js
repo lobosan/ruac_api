@@ -37,7 +37,7 @@ const interoperador = (paquete, cedula) => {
         if (paquete === 619) {
           reject(new Error('La cédula ingresada no consta en el Registro Civil. Por favor verifique sus datos'))
         } else if (paquete === 620) {
-          resolve({ tercerNivel: '', cuartoNivel: '' })
+          resolve({ titulosSenescyt: [] })
         } else if (paquete === 621) {
           resolve({ estadoAfiliado: '' })
         }
@@ -47,21 +47,13 @@ const interoperador = (paquete, cedula) => {
         let institucion = {}
         if (data.nombre === 'SENESCYT') {
           data = _.get(result, `${rootPath}['detalle']['items']`)
+          let titulosSenescyt = []
           if (Array.isArray(data)) {
-            data.forEach(obj => {
-              if (obj.nombre === 'Tercer Nivel o Pregrado') {
-                institucion['tercerNivel'] = obj.registros.valor
-              } else if (obj.nombre === 'CUARTO_NIVEL' || obj.nombre === 'Cuarto Nivel o Posgrado') {
-                institucion['cuartoNivel'] = obj.registros.valor
-              } else {
-                institucion[obj.nombre] = obj.registros.valor
-              }
-            })
+            data.forEach(obj => titulosSenescyt.push(obj.registros.valor))
+            institucion['titulosSenescyt'] = titulosSenescyt
           } else if (typeof data === 'object') {
-            if (data.nombre === 'Tercer Nivel o Pregrado') {
-              institucion['tercerNivel'] = data.registros.valor
-              institucion['cuartoNivel'] = ''
-            }
+            titulosSenescyt.push(data.registros.valor)
+            institucion['titulosSenescyt'] = titulosSenescyt
           }
         } else {
           data = _.get(result, `${rootPath}['datosPrincipales']['registros']`)

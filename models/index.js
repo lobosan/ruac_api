@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
-import userSchema from './userSchema'
+import usuarioSchema from './usuarioSchema'
+import paisSchema from './paisSchema'
 import provinciaSchema from './provinciaSchema'
 import cantonSchema from './cantonSchema'
 
@@ -17,7 +18,8 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 
 const models = {
-  Users: mongoose.model('Users', userSchema),
+  Usuarios: mongoose.model('Usuarios', usuarioSchema),
+  Paises: mongoose.model('Paises', paisSchema),
   Provincias: mongoose.model('Provincias', provinciaSchema),
   Cantones: mongoose.model('Cantones', cantonSchema)
 }
