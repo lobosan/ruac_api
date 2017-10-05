@@ -141,7 +141,7 @@ const usuarioSchema = new Schema({
   },
   declaracion: {
     type: String,
-    required: false
+    default: 'No'
   },
   role: {
     type: String,

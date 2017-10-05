@@ -56,9 +56,9 @@ export default {
         })
         return user
       } catch (error) {
-        if (error.message.includes('users.$cedula_1 dup key')) {
+        if (error.message.includes('usuarios.$cedula_1 dup key')) {
           throw new Error('La cédula ingresada ya está registrada')
-        } else if (error.message.includes('users.$email_1 dup key')) {
+        } else if (error.message.includes('usuarios.$email_1 dup key')) {
           throw new Error('El email ingresado ya está registrado')
         } else if (error.message.includes('Invalid login: 535 5.7.8')) {
           throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')

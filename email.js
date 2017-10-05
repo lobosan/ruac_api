@@ -29,7 +29,7 @@ export const verifyTransporter = async () => {
         return reject(
           new Error('Lo sentimos en este momento no podemos enviar correos electrónicos. Por favor inténtelo más tarde.')
         )
-      }, 1500)
+      }, 5000)
     })
   ])
 }
