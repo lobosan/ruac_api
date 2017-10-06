@@ -75,7 +75,15 @@ const usuarioSchema = new Schema({
     type: String,
     required: false
   },
+  codigoProvinciaDomicilio: {
+    type: String,
+    required: false
+  },
   cantonDomicilio: {
+    type: String,
+    required: false
+  },
+  codigoCantonDomicilio: {
     type: String,
     required: false
   },

@@ -86,7 +86,34 @@ export default {
       )
       return token
     },
-    updateProfile: async (parent, { cedula, tipoAfiliado, email, telefonoFijo, telefonoCelular, paisDomicilio, provinciaDomicilio, cantonDomicilio, nombreArtistico, tipoActividad, actividadPrincipal, actividadSecundaria, postulacionesFinanciamiento, otrasEntidadesApoyo, obrasRegistradasIEPI, perteneceOrgCultural, logrosAlcanzados, proyectosCulturales, formacionCapacitacion, webBlog, youtube, facebook, twitter, declaracion }, { models }) => {
+    updateProfile: async (parent, {
+      cedula,
+      tipoAfiliado,
+      email,
+      telefonoFijo,
+      telefonoCelular,
+      paisDomicilio,
+      provinciaDomicilio,
+      codigoProvinciaDomicilio,
+      cantonDomicilio,
+      codigoCantonDomicilio,
+      nombreArtistico,
+      tipoActividad,
+      actividadPrincipal,
+      actividadSecundaria,
+      postulacionesFinanciamiento,
+      otrasEntidadesApoyo,
+      obrasRegistradasIEPI,
+      perteneceOrgCultural,
+      logrosAlcanzados,
+      proyectosCulturales,
+      formacionCapacitacion,
+      webBlog,
+      youtube,
+      facebook,
+      twitter,
+      declaracion
+    }, { models }) => {
       try {
         const user = await models.Usuarios.findOneAndUpdate({ cedula }, {
           $set: {
@@ -96,7 +123,9 @@ export default {
             telefonoCelular,
             paisDomicilio,
             provinciaDomicilio,
+            codigoProvinciaDomicilio,
             cantonDomicilio,
+            codigoCantonDomicilio,
             nombreArtistico,
             tipoActividad,
             actividadPrincipal,
