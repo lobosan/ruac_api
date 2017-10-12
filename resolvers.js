@@ -98,7 +98,7 @@ export default {
       cantonDomicilio,
       codigoCantonDomicilio,
       nombreArtistico,
-      tipoActividad,
+      tipoActorCultural,
       actividadPrincipal,
       actividadSecundaria,
       postulacionesFinanciamiento,
@@ -111,8 +111,7 @@ export default {
       webBlog,
       youtube,
       facebook,
-      twitter,
-      declaracion
+      twitter
     }, { models }) => {
       try {
         const user = await models.Usuarios.findOneAndUpdate({ cedula }, {
@@ -127,7 +126,7 @@ export default {
             cantonDomicilio,
             codigoCantonDomicilio,
             nombreArtistico,
-            tipoActividad,
+            tipoActorCultural,
             actividadPrincipal,
             actividadSecundaria,
             postulacionesFinanciamiento,
@@ -140,8 +139,7 @@ export default {
             webBlog,
             youtube,
             facebook,
-            twitter,
-            declaracion
+            twitter
           }
         })
         return user

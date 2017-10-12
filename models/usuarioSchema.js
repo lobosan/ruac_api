@@ -91,7 +91,7 @@ const usuarioSchema = new Schema({
     type: String,
     required: false
   },
-  tipoActividad: {
+  tipoActorCultural: {
     type: String,
     required: false
   },
@@ -146,10 +146,6 @@ const usuarioSchema = new Schema({
   twitter: {
     type: String,
     required: false
-  },
-  declaracion: {
-    type: String,
-    default: 'No'
   },
   role: {
     type: String,

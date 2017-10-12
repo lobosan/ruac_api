@@ -21,7 +21,7 @@ type Usuario {
   cantonDomicilio: String
   codigoCantonDomicilio: String
   nombreArtistico: String
-  tipoActividad: String
+  tipoActorCultural: String
   actividadPrincipal: String
   actividadSecundaria: String
   postulacionesFinanciamiento: [String]
@@ -35,7 +35,6 @@ type Usuario {
   youtube: String
   facebook: String
   twitter: String
-  declaracion: String
 }
 
 type Dinardap {
@@ -104,7 +103,7 @@ type Mutation {
     cantonDomicilio: String,
     codigoCantonDomicilio: String,
     nombreArtistico: String,
-    tipoActividad: String!,
+    tipoActorCultural: String!,
     actividadPrincipal: String!,
     actividadSecundaria: String,
     postulacionesFinanciamiento: [String],
@@ -117,8 +116,7 @@ type Mutation {
     webBlog: String,
     youtube: String,
     facebook: String,
-    twitter: String,
-    declaracion: String!
+    twitter: String
   ): Usuario!
 
 }`
