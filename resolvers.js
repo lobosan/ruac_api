@@ -9,9 +9,16 @@ import { requiresAuth } from './permissions'
 export default {
   Query: {
     loggedInUser: requiresAuth.createResolver(async (parent, args, { models, user }) => {
-      const loggedInUser = await models.Usuarios.findOne({ _id: user._id })
-      return loggedInUser
+      if (user) {
+        const loggedInUser = await models.Usuarios.findOne({ _id: user._id })
+        return loggedInUser
+      }
+      return null
     }),
+    logout: (parent, args, { res }) => {
+      res.cookie('token', '')
+      return true
+    },
     allUsers: async (parent, args, { models }) => {
       const users = await models.Usuarios.find()
       return users
@@ -67,7 +74,7 @@ export default {
         }
       }
     },
-    signIn: async (parent, { cedula, contrasena }, { models, SECRET }) => {
+    signIn: async (parent, { cedula, contrasena }, { models, SECRET, res }) => {
       const user = await models.Usuarios.findOne({ cedula })
       if (!user) {
         throw new Error('La cédula ingresada no está registrada')
@@ -82,9 +89,10 @@ export default {
       const token = await jwt.sign(
         { user: _.pick(user, ['_id', 'cedula', 'role']) },
         SECRET,
-        { expiresIn: '7d' }
+        { expiresIn: '1h' }
       )
-      return token
+      res.cookie('token', token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
+      return true
     },
     updateProfile: async (parent, {
       cedula,

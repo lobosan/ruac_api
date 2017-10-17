@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express'
 import { makeExecutableSchema } from 'graphql-tools'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken'
 
 import './dotenv'
@@ -20,7 +21,7 @@ const schema = makeExecutableSchema({
 })
 
 const addUser = async (req, res, next) => {
-  const token = req.headers['token']
+  const token = req.cookies.token
   if (token) {
     try {
       const { user } = await jwt.verify(token, SECRET)
@@ -34,7 +35,8 @@ const addUser = async (req, res, next) => {
 
 const app = express()
 
-app.use(cors('*'))
+app.use(cors({ origin: 'http://172.17.6.74:8080', credentials: true }))
+app.use(cookieParser())
 app.use(addUser)
 
 app.get('/confirmacion/:token', async (req, res) => {
@@ -60,13 +62,14 @@ app.use(
 app.use(
   '/graphql',
   bodyParser.json(),
-  graphqlExpress(req => ({
+  graphqlExpress((req, res) => ({
     schema,
     context: {
       models,
       SECRET,
       EMAIL_SECRET,
-      user: req.user
+      user: req.user,
+      res
     }
   }))
 )

@@ -12,12 +12,12 @@ const createResolver = (resolver) => {
 
 export const requiresAuth = createResolver((parent, args, context) => {
   if (!context.user) {
-    throw new Error('Not authenticated')
+    throw new Error('Inicie sesión para acceder a la página solicitada.')
   }
 })
 
 export const requiresAdmin = requiresAuth.createResolver((parent, args, context) => {
   if (context.user.role !== 'admin') {
-    throw new Error('Requires admin access')
+    throw new Error('Usted no tiene los privilegios necesarios para acceder a la página solicitada.')
   }
 })
