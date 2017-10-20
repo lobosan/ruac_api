@@ -5,6 +5,7 @@ import _ from 'lodash'
 import dinardap from './dinardap'
 import { transporter, verifyTransporter } from './email'
 import { requiresAuth } from './permissions'
+import { trySignIn } from './auth'
 
 export default {
   Query: {
@@ -17,6 +18,7 @@ export default {
     }),
     logout: (parent, args, { res }) => {
       res.cookie('token', '')
+      res.cookie('refresh-token', '')
       return true
     },
     allUsers: async (parent, args, { models }) => {
@@ -74,25 +76,11 @@ export default {
         }
       }
     },
-    signIn: async (parent, { cedula, contrasena }, { models, SECRET, res }) => {
-      const user = await models.Usuarios.findOne({ cedula })
-      if (!user) {
-        throw new Error('La cédula ingresada no está registrada')
-      }
-      if (!user.emailConfirmed) {
-        throw new Error('Su email no ha sido confirmado. Por favor revise su bandeja de entrada o regístrese nuevamente')
-      }
-      const valid = await bcrypt.compare(contrasena, user.contrasena)
-      if (!valid) {
-        throw new Error('Contraseña incorrecta')
-      }
-      const token = await jwt.sign(
-        { user: _.pick(user, ['_id', 'cedula', 'role']) },
-        SECRET,
-        { expiresIn: '1h' }
-      )
+    signIn: async (parent, { cedula, contrasena }, { models, SECRET, SECRET_2, res }) => {
+      const { token, refreshToken } = await trySignIn(cedula, contrasena, models, SECRET, SECRET_2)
       res.cookie('token', token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
-      return true
+      res.cookie('refresh-token', refreshToken, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
+      return { token, refreshToken }
     },
     updateProfile: async (parent, {
       cedula,

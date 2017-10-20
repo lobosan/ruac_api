@@ -47,6 +47,11 @@ type Dinardap {
   estadoAfiliado: String
 }
 
+type AuthPayload {
+  token: String!
+  refreshToken: String!
+}
+
 type Pais {
   codigoPais: String!
   pais: String!
@@ -90,7 +95,7 @@ type Mutation {
   signIn(
     cedula: String!,
     contrasena: String!
-  ): String!
+  ): AuthPayload!
 
   updateProfile(
     cedula: String!,
@@ -120,4 +125,10 @@ type Mutation {
     twitter: String
   ): Usuario!
 
-}`
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+`
