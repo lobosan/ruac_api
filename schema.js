@@ -57,13 +57,9 @@ type Pais {
   pais: String!
 }
 
-type Provincia {
+type Dpa {
   codigoProvincia: String!
   provincia: String!
-}
-
-type Canton {
-  codigoProvincia: String!
   codigoCanton: String!
   canton: String!
 }
@@ -74,8 +70,7 @@ type Query {
   allUsers: [Usuario!]!
   dinardap(cedula: String!): Dinardap!
   paises: [Pais!]!
-  provincias: [Provincia!]!
-  cantones(codigoProvincia: String!): [Canton!]!
+  dpa: [Dpa!]!
 }
 
 type Mutation {

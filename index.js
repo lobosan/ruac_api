@@ -1,5 +1,6 @@
 import express from 'express'
-import bodyParser from 'body-parser'
+import { createServer } from 'http'
+import { json } from 'body-parser'
 import { graphiqlExpress, graphqlExpress } from 'apollo-server-express'
 import { makeExecutableSchema } from 'graphql-tools'
 import cors from 'cors'
@@ -17,9 +18,9 @@ const SECRET = process.env.SECRET
 const SECRET_2 = process.env.SECRET_2
 const EMAIL_SECRET = process.env.EMAIL_SECRET
 
-const server = express()
-server.use(cors({ origin: 'http://172.17.6.74:8080', credentials: true }))
-server.use(cookieParser())
+const app = express()
+app.use(cors({ origin: 'http://ruac2.culturaypatrimonio.gob.ec', credentials: true }))
+app.use(cookieParser())
 
 const addUser = async (req, res, next) => {
   const token = req.headers['x-token']
@@ -60,19 +61,9 @@ const addUser = async (req, res, next) => {
   return next()
 }
 
-server.use(addUser)
+app.use(addUser)
 
-server.use('/graphiql', graphiqlExpress({
-  endpointURL: '/graphql'
-}))
-
-server.use('/graphql', bodyParser.json(), graphqlExpress((req, res) => ({
-  schema: makeExecutableSchema({ typeDefs, resolvers }),
-  debug: true,
-  context: { models, SECRET, SECRET_2, EMAIL_SECRET, user: req.user, res }
-})))
-
-server.get('/confirmacion/:token', async (req, res) => {
+app.get('/confirmacion/:token', async (req, res) => {
   let verificado = false
   try {
     const { user: { _id } } = await jwt.verify(req.params.token, EMAIL_SECRET)
@@ -82,8 +73,19 @@ server.get('/confirmacion/:token', async (req, res) => {
     console.log('Error al verificar email', error)
     verificado = false
   }
-  res.redirect(`http://172.17.6.74:8080/inicio-sesion?verificado=${verificado}`)
+  res.redirect(`http://ruac2.culturaypatrimonio.gob.ec/inicio-sesion?verificado=${verificado}`)
 })
+
+app.use('/graphiql', graphiqlExpress({
+  endpointURL: '/graphql'
+}))
+
+app.use('/graphql', json(), graphqlExpress((req, res) => ({
+  schema: makeExecutableSchema({ typeDefs, resolvers }),
+  context: { models, SECRET, SECRET_2, EMAIL_SECRET, user: req.user, res }
+})))
+
+const server = createServer(app)
 
 server.listen(PORT, () => {
   console.log(`GraphQL server listening on http://localhost:${PORT}/graphiql`)

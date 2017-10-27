@@ -17,7 +17,7 @@ transporter.use('compile', hbs({
   viewEngine: {
     extname: '.hbs'
   },
-  viewPath: 'emails',
+  viewPath: 'email',
   extName: '.hbs'
 }))
 

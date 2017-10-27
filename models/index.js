@@ -2,8 +2,7 @@ import mongoose from 'mongoose'
 
 import usuarioSchema from './usuarioSchema'
 import paisSchema from './paisSchema'
-import provinciaSchema from './provinciaSchema'
-import cantonSchema from './cantonSchema'
+import dpaSchema from './dpaSchema'
 
 mongoose.Promise = global.Promise
 
@@ -20,8 +19,7 @@ mongoose.connect(process.env.MONGO_URI, {
 const models = {
   Usuarios: mongoose.model('Usuarios', usuarioSchema),
   Paises: mongoose.model('Paises', paisSchema),
-  Provincias: mongoose.model('Provincias', provinciaSchema),
-  Cantones: mongoose.model('Cantones', cantonSchema)
+  Dpas: mongoose.model('Dpas', dpaSchema)
 }
 
 export default models

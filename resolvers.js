@@ -22,24 +22,16 @@ export default {
       return true
     },
     allUsers: async (parent, args, { models }) => {
-      const users = await models.Usuarios.find()
-      return users
+      return models.Usuarios.find()
     },
     dinardap: async (parent, { cedula }) => {
-      const data = await dinardap(cedula)
-      return data
+      return dinardap(cedula)
     },
     paises: async (parent, args, { models }) => {
-      const paises = await models.Paises.find()
-      return paises
+      return models.Paises.find()
     },
-    provincias: async (parent, args, { models }) => {
-      const provincias = await models.Provincias.find()
-      return provincias
-    },
-    cantones: async (parent, { codigoProvincia }, { models }) => {
-      const cantones = await models.Cantones.find({ codigoProvincia })
-      return cantones
+    dpa: async (parent, args, { models }) => {
+      return models.Dpas.find()
     }
   },
   Mutation: {
@@ -58,7 +50,7 @@ export default {
           subject: 'Confirmar email',
           template: 'welcome',
           attachments: [{
-            path: 'emails/ruac.png',
+            path: 'email/ruac.png',
             cid: 'ruac-logo@culturaypatrimonio.gob.ec'
           }],
           context: { url: `http://172.17.6.74:3000/confirmacion/${emailToken}` }
@@ -110,7 +102,7 @@ export default {
       twitter
     }, { models }) => {
       try {
-        const user = await models.Usuarios.findOneAndUpdate({ cedula }, {
+        return models.Usuarios.findOneAndUpdate({ cedula }, {
           $set: {
             tipoAfiliado,
             email,
@@ -138,7 +130,6 @@ export default {
             twitter
           }
         })
-        return user
       } catch (error) {
         if (error.message.includes('users.$cedula_1 dup key')) {
           throw new Error('La cédula ingresada ya está registrada')

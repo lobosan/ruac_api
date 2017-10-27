@@ -2,25 +2,25 @@ import mongoose from 'mongoose'
 
 const Schema = mongoose.Schema
 
-const cantonSchema = new Schema({
+const dpaSchema = new Schema({
   codigoProvincia: {
     type: String,
     index: true,
-    required: true,
-    trim: true
+    required: true
+  },
+  provincia: {
+    type: String,
+    required: true
   },
   codigoCanton: {
     type: String,
     index: true,
-    unique: true,
-    required: true,
-    trim: true
+    required: true
   },
   canton: {
     type: String,
-    required: true,
-    trim: true
+    required: true
   }
 })
 
-export default cantonSchema
+export default dpaSchema
