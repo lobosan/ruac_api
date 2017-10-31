@@ -16,6 +16,10 @@ const usuarioSchema = new Schema({
     minlength: 9,
     required: true
   },
+  cambiarContrasena: {
+    type: Boolean,
+    default: false
+  },
   nombre: {
     type: String,
     required: true

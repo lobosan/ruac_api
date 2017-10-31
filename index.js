@@ -66,7 +66,7 @@ app.use(addUser)
 app.get('/confirmacion/:token', async (req, res) => {
   let verificado = false
   try {
-    const { user: { _id } } = await jwt.verify(req.params.token, EMAIL_SECRET)
+    const { _id } = await jwt.verify(req.params.token, EMAIL_SECRET)
     await models.Usuarios.findOneAndUpdate({ _id }, { $set: { emailConfirmed: true } })
     verificado = true
   } catch (error) {
@@ -74,6 +74,19 @@ app.get('/confirmacion/:token', async (req, res) => {
     verificado = false
   }
   res.redirect(`http://ruac2.culturaypatrimonio.gob.ec/inicio-sesion?verificado=${verificado}`)
+})
+
+app.get('/cambiar-contrasena/:token', async (req, res) => {
+  const url = 'http://ruac2.culturaypatrimonio.gob.ec/cambiar-contrasena'
+  try {
+    let token = null
+    await jwt.verify(req.params.token, EMAIL_SECRET)
+    token = req.params.token
+    res.redirect(`${url}?token=${token}`)
+  } catch (error) {
+    console.log('Error al verificar token de cambio de contraseña', error)
+    res.redirect(url)
+  }
 })
 
 app.use('/graphiql', graphiqlExpress({

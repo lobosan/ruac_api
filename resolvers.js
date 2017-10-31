@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import _ from 'lodash'
 
 import dinardap from './dinardap'
 import { transporter, verifyTransporter } from './email'
@@ -36,26 +35,19 @@ export default {
   },
   Mutation: {
     signUp: async (parent, args, { models, EMAIL_SECRET }) => {
-      const hashedPassword = await bcrypt.hash(args.contrasena, 12)
       try {
         await verifyTransporter()
-        const user = await new models.Usuarios({ ...args, contrasena: hashedPassword }).save()
-        const emailToken = await jwt.sign(
-          { user: _.pick(user, '_id') },
-          EMAIL_SECRET,
-          { expiresIn: '1d' }
-        )
+        const hashedPassword = await bcrypt.hash(args.contrasena, 12)
+        const { _id } = await new models.Usuarios({ ...args, contrasena: hashedPassword }).save()
+        const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
         await transporter.sendMail({
           to: args.email,
           subject: 'Confirmar email',
           template: 'welcome',
-          attachments: [{
-            path: 'email/ruac.png',
-            cid: 'ruac-logo@culturaypatrimonio.gob.ec'
-          }],
+          attachments: [{ path: 'email/ruac.png', cid: 'ruac-logo@culturaypatrimonio.gob.ec' }],
           context: { url: `http://172.17.6.74:3000/confirmacion/${emailToken}` }
         })
-        return user
+        return true
       } catch (error) {
         if (error.message.includes('usuarios.$cedula_1 dup key')) {
           throw new Error('La cédula ingresada ya está registrada')
@@ -73,6 +65,47 @@ export default {
       res.cookie('token', token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
       res.cookie('refresh-token', refreshToken, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
       return { token, refreshToken }
+    },
+    requestPasswordChange: async (parent, { cedula, email }, { models, EMAIL_SECRET }) => {
+      try {
+        await verifyTransporter()
+        const { _id } = await models.Usuarios.findOne({ cedula, email })
+        if (!_id) throw new Error('Lo sentimos, no encontramos ningún usuario con estos datos. Por favor revíselos.')
+        if (_id.cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud. Por favor revise su cuenta de correo electrónico o contáctenos.')
+        await models.Usuarios.findOneAndUpdate({ _id }, { $set: { cambiarContrasena: true } })
+        const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
+        await transporter.sendMail({
+          to: email,
+          subject: 'Solicitud de Cambio de Contraseña',
+          template: 'requestPasswordChange',
+          attachments: [{ path: 'email/ruac.png', cid: 'ruac-logo@culturaypatrimonio.gob.ec' }],
+          context: { url: `http://172.17.6.74:3000/cambiar-contrasena/${emailToken}` }
+        })
+        return true
+      } catch (error) {
+        if (error.message.includes('Invalid login: 535 5.7.8')) {
+          throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')
+        } else {
+          throw new Error(error.message)
+        }
+      }
+    },
+    updatePassword: async (parent, { token, contrasena }, { models, EMAIL_SECRET }) => {
+      try {
+        await verifyTransporter()
+        const { _id } = jwt.verify(token, EMAIL_SECRET)
+        const hashedPassword = await bcrypt.hash(contrasena, 12)
+        await models.Usuarios.findOneAndUpdate({ _id }, {
+          $set: { cambiarContrasena: false, contrasena: hashedPassword }
+        })
+        return true
+      } catch (error) {
+        if (error.message.includes('invalid token')) {
+          throw new Error('Los datos de usuario son incorrectos.')
+        } else {
+          throw new Error(error.message)
+        }
+      }
     },
     updateProfile: async (parent, {
       cedula,

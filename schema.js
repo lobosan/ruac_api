@@ -4,6 +4,7 @@ type Usuario {
   _id: ID!
   cedula: String!
   contrasena: String!
+  cambiarContrasena: Boolean
   nombre: String!
   fechaNacimiento: String!
   lugarNacimiento: String!
@@ -74,7 +75,7 @@ type Query {
 }
 
 type Mutation {
-  signUp(
+  signUp (
     cedula: String!,
     contrasena: String!,
     nombre: String!,
@@ -85,14 +86,24 @@ type Mutation {
     estadoAfiliado: String,
     titulosSenescyt: [String],
     email: String!
-  ): Usuario!
+  ): Boolean!
 
-  signIn(
+  signIn (
     cedula: String!,
     contrasena: String!
   ): AuthPayload!
 
-  updateProfile(
+  requestPasswordChange (
+    cedula: String!,
+    email: String!
+  ): Boolean!
+
+  updatePassword (
+    token: String!,
+    contrasena: String!
+  ): Boolean!
+
+  updateProfile (
     cedula: String!,
     tipoAfiliado: String!,
     email: String!,
