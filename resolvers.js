@@ -1,8 +1,9 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import hbs from 'nodemailer-express-handlebars'
 
 import dinardap from './dinardap'
-import { transporter, verifyTransporter } from './email'
+import { verifyTransporter, options, transporter } from './email'
 import { requiresAuth } from './permissions'
 import { trySignIn } from './auth'
 
@@ -40,18 +41,19 @@ export default {
         const hashedPassword = await bcrypt.hash(args.contrasena, 12)
         const { _id } = await new models.Usuarios({ ...args, contrasena: hashedPassword }).save()
         const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
+        transporter.use('compile', hbs(options))
         await transporter.sendMail({
           to: args.email,
-          subject: 'Confirmar email',
+          subject: 'Confirmar Email',
           template: 'welcome',
           attachments: [{ path: 'email/ruac.png', cid: 'ruac-logo@culturaypatrimonio.gob.ec' }],
           context: { url: `http://172.17.6.74:3000/confirmacion/${emailToken}` }
         })
         return true
       } catch (error) {
-        if (error.message.includes('usuarios.$cedula_1 dup key')) {
+        if (error.message.includes('cedula_1 dup key')) {
           throw new Error('La cédula ingresada ya está registrada')
-        } else if (error.message.includes('usuarios.$email_1 dup key')) {
+        } else if (error.message.includes('email_1 dup key')) {
           throw new Error('El email ingresado ya está registrado')
         } else if (error.message.includes('Invalid login: 535 5.7.8')) {
           throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')
@@ -69,11 +71,12 @@ export default {
     requestPasswordChange: async (parent, { cedula, email }, { models, EMAIL_SECRET }) => {
       try {
         await verifyTransporter()
-        const { _id } = await models.Usuarios.findOne({ cedula, email })
-        if (!_id) throw new Error('Lo sentimos, no encontramos ningún usuario con estos datos. Por favor revíselos.')
-        if (_id.cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud. Por favor revise su cuenta de correo electrónico o contáctenos.')
-        await models.Usuarios.findOneAndUpdate({ _id }, { $set: { cambiarContrasena: true } })
-        const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
+        const user = await models.Usuarios.findOne({ cedula, email })
+        if (!user) throw new Error('Lo sentimos, no encontramos ningún usuario con estos datos. Por favor revíselos.')
+        if (user._id.cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud. Por favor revise su cuenta de correo electrónico o contáctenos.')
+        await models.Usuarios.findOneAndUpdate({ _id: user._id }, { $set: { cambiarContrasena: true } })
+        const emailToken = await jwt.sign({ _id: user._id }, EMAIL_SECRET, { expiresIn: '1d' })
+        transporter.use('compile', hbs(options))
         await transporter.sendMail({
           to: email,
           subject: 'Solicitud de Cambio de Contraseña',
@@ -92,7 +95,6 @@ export default {
     },
     updatePassword: async (parent, { token, contrasena }, { models, EMAIL_SECRET }) => {
       try {
-        await verifyTransporter()
         const { _id } = jwt.verify(token, EMAIL_SECRET)
         const hashedPassword = await bcrypt.hash(contrasena, 12)
         await models.Usuarios.findOneAndUpdate({ _id }, {
