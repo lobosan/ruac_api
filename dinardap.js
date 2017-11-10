@@ -1,5 +1,5 @@
-import restler from 'restler'
-import _ from 'lodash'
+const restler = require('restler')
+const _ = require('lodash')
 
 const interoperador = (paquete, cedula) => {
   return new Promise((resolve, reject) => {
@@ -89,4 +89,4 @@ const dinardap = async cedula => {
   }
 }
 
-export default dinardap
+module.exports = dinardap

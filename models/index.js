@@ -1,8 +1,8 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
-import usuarioSchema from './usuarioSchema'
-import paisSchema from './paisSchema'
-import dpaSchema from './dpaSchema'
+const usuarioSchema = require('./usuarioSchema')
+const paisSchema = require('./paisSchema')
+const dpaSchema = require('./dpaSchema')
 
 mongoose.Promise = global.Promise
 
@@ -22,4 +22,4 @@ const models = {
   Dpas: mongoose.model('Dpas', dpaSchema)
 }
 
-export default models
+module.exports = models

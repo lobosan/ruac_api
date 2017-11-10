@@ -1,13 +1,13 @@
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import hbs from 'nodemailer-express-handlebars'
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const hbs = require('nodemailer-express-handlebars')
 
-import dinardap from './dinardap'
-import { verifyTransporter, options, transporter } from './email'
-import { requiresAuth } from './permissions'
-import { trySignIn } from './auth'
+const dinardap = require('./dinardap')
+const { verifyTransporter, options, transporter } = require('./email')
+const { requiresAuth } = require('./permissions')
+const { trySignIn } = require('./auth')
 
-export default {
+module.exports = {
   Query: {
     loggedInUser: requiresAuth.createResolver(async (parent, args, { models, user }) => {
       if (user) {

@@ -12,8 +12,21 @@ yarn
 yarn start
 ```
 
-## Update NodeJS and reinstall global packages from previous version
+## List npm global packages
 
 ``` bash
-nvm install node --reinstall-packages-from=node
+npm -g ls --depth=0
+```
+
+## Install latest LTS
+
+``` bash
+nvm install --lts
+```
+
+## List and uninstall node releases
+
+``` bash
+nvm list
+nvm uninstall v#.#.#
 ```

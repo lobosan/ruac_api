@@ -4,7 +4,7 @@
   "description": "API del Registro Único de Artistas y Gestores Culturales",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js"
+    "start": "nodemon index.js"
   },
   "author": "Santiago Galindo",
   "license": "MIT",
@@ -27,9 +27,6 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-preset-stage-3": "^6.24.1",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-html": "^3.2.2",

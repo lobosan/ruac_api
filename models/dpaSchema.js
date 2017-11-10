@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
 
@@ -23,4 +23,4 @@ const dpaSchema = new Schema({
   }
 })
 
-export default dpaSchema
+module.exports = dpaSchema

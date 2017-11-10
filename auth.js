@@ -1,8 +1,8 @@
-import jwt from 'jsonwebtoken'
-import _ from 'lodash'
-import bcrypt from 'bcrypt'
+const jwt = require('jsonwebtoken')
+const _ = require('lodash')
+const bcrypt = require('bcrypt')
 
-export const createTokens = async (user, secret, secret2) => {
+const createTokens = async (user, secret, secret2) => {
   const createToken = jwt.sign(
     { user: _.pick(user, ['_id', 'cedula', 'role']) },
     secret,
@@ -18,7 +18,7 @@ export const createTokens = async (user, secret, secret2) => {
   return Promise.all([createToken, createRefreshToken])
 }
 
-export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET_2) => {
+const refreshTokens = async (token, refreshToken, models, SECRET, SECRET_2) => {
   let userId = -1
   try {
     const { user: { _id } } = jwt.decode(refreshToken)
@@ -50,7 +50,7 @@ export const refreshTokens = async (token, refreshToken, models, SECRET, SECRET_
   return { token: newToken, refreshToken: newRefreshToken, user }
 }
 
-export const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) => {
+const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) => {
   const user = await models.Usuarios.findOne({ cedula })
   if (!user) {
     throw new Error('La cédula ingresada no está registrada.')
@@ -67,4 +67,10 @@ export const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) =>
   const [token, refreshToken] = await createTokens(user, SECRET, SECRET_2 + user.contrasena)
 
   return { token, refreshToken }
+}
+
+module.exports = {
+  createTokens,
+  refreshTokens,
+  trySignIn
 }

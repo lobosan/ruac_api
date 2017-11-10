@@ -1,6 +1,6 @@
-import nodemailer from 'nodemailer'
+const nodemailer = require('nodemailer')
 
-export const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   host: 'mail.culturaypatrimonio.gob.ec',
   port: 465,
   secure: true,
@@ -12,7 +12,7 @@ export const transporter = nodemailer.createTransport({
   from: '"RUAC" <ruac-informativo@culturaypatrimonio.gob.ec>'
 })
 
-export const options = {
+const options = {
   viewEngine: {
     extname: '.hbs'
   },
@@ -20,7 +20,7 @@ export const options = {
   extName: '.hbs'
 }
 
-export const verifyTransporter = async () => {
+const verifyTransporter = async () => {
   return Promise.race([
     transporter.verify(),
     new Promise((resolve, reject) => {
@@ -31,4 +31,10 @@ export const verifyTransporter = async () => {
       }, 5000)
     })
   ])
+}
+
+module.exports = {
+  transporter,
+  options,
+  verifyTransporter
 }

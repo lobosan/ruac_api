@@ -1,4 +1,4 @@
-export default `
+module.exports = `
 
 type Usuario {
   _id: ID!

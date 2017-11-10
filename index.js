@@ -1,17 +1,17 @@
-import express from 'express'
-import { createServer } from 'http'
-import { json } from 'body-parser'
-import { graphiqlExpress, graphqlExpress } from 'apollo-server-express'
-import { makeExecutableSchema } from 'graphql-tools'
-import cors from 'cors'
-import cookieParser from 'cookie-parser'
-import jwt from 'jsonwebtoken'
+const express = require('express')
+const { createServer } = require('http')
+const { json } = require('body-parser')
+const { graphiqlExpress, graphqlExpress } = require('apollo-server-express')
+const { makeExecutableSchema } = require('graphql-tools')
+const cors = require('cors')
+const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
-import './dotenv'
-import models from './models'
-import typeDefs from './schema'
-import resolvers from './resolvers'
-import { refreshTokens } from './auth'
+const models = require('./models')
+const typeDefs = require('./schema')
+const resolvers = require('./resolvers')
+const { refreshTokens } = require('./auth')
 
 const PORT = 3000
 const SECRET = process.env.SECRET
@@ -34,7 +34,7 @@ const addUser = async (req, res, next) => {
   }
 
   try {
-    const { user } = jwt.verify(token, SECRET)
+    const { user } = await jwt.verify(token, SECRET)
     req.user = user
   } catch (error) {
     const refreshToken = req.headers['x-refresh-token']
