@@ -24,18 +24,18 @@ const interoperador = (paquete, cedula) => {
     })
     request.on('error', error => {
       console.log('Error al conectarse con la DINARDAP', error)
-      reject(new Error('Error al conectarse con la DINARDAP. Por favor inténtelo más tarde'))
+      reject(new Error('Error al conectarse con la DINARDAP. Por favor inténtelo más tarde.'))
     })
     request.on('timeout', () => {
-      reject(new Error('La DINARDAP está tardando en verificar sus datos. Por favor inténtelo más tarde'))
+      reject(new Error('La DINARDAP está tardando en verificar sus datos. Por favor inténtelo más tarde.'))
     })
     request.on('complete', result => {
       if (result instanceof Error) {
         console.log('Error al consultar datos con la DINARDAP', result.message)
-        reject(new Error('Error al verificar sus datos con la DINARDAP. Por favor inténtelo más tarde'))
+        reject(new Error('Error al verificar sus datos con la DINARDAP. Por favor inténtelo más tarde.'))
       } else if (result['soap:Envelope']['soap:Body']['soap:Fault']) {
         if (paquete === 619) {
-          reject(new Error('La cédula ingresada no consta en el Registro Civil. Por favor verifique sus datos'))
+          reject(new Error('La cédula ingresada no consta en el Registro Civil. Por favor verifique sus datos.'))
         } else if (paquete === 620) {
           resolve({ titulosSenescyt: [] })
         } else if (paquete === 621) {

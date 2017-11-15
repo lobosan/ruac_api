@@ -4,7 +4,7 @@
   "description": "API del Registro Único de Artistas y Gestores Culturales",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "pm2 start index.js --name ruac_api --watch"
   },
   "author": "Santiago Galindo",
   "license": "MIT",
@@ -34,7 +34,6 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "nodemon": "^1.11.0",
     "standard": "^10.0.3"
   }
 }

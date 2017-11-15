@@ -72,7 +72,7 @@ module.exports = {
       try {
         await verifyTransporter()
         const user = await models.Usuarios.findOne({ cedula, email })
-        if (!user) throw new Error('Lo sentimos, no encontramos ningún usuario con estos datos. Por favor revíselos.')
+        if (!user) throw new Error('Lo sentimos, no encontramos ningún usuario con la información ingresada. Por favor verifique sus datos.')
         if (user._id.cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud. Por favor revise su cuenta de correo electrónico o contáctenos.')
         await models.Usuarios.findOneAndUpdate({ _id: user._id }, { $set: { cambiarContrasena: true } })
         const emailToken = await jwt.sign({ _id: user._id }, EMAIL_SECRET, { expiresIn: '1d' })

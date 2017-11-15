@@ -53,7 +53,7 @@ const refreshTokens = async (token, refreshToken, models, SECRET, SECRET_2) => {
 const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) => {
   const user = await models.Usuarios.findOne({ cedula })
   if (!user) {
-    throw new Error('La cédula ingresada no está registrada.')
+    throw new Error('La cédula ingresada no está registrada. Por favor verifique sus datos.')
   }
   if (!user.emailConfirmed) {
     throw new Error('Su email no ha sido confirmado. Por favor revise su bandeja de entrada o regístrese nuevamente.')
@@ -61,7 +61,7 @@ const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) => {
 
   const valid = await bcrypt.compare(contrasena, user.contrasena)
   if (!valid) {
-    throw new Error('La contraseña es incorrecta.')
+    throw new Error('La contraseña ingresada es incorrecta. Por favor verifique sus datos.')
   }
 
   const [token, refreshToken] = await createTokens(user, SECRET, SECRET_2 + user.contrasena)
