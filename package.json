@@ -4,7 +4,7 @@
   "description": "API del Registro Único de Artistas y Gestores Culturales",
   "main": "index.js",
   "scripts": {
-    "start": "pm2 start index.js --name ruac_api --watch"
+    "start": "pm2 start index.js --name ruac_api --watch && pm2 monit"
   },
   "author": "Santiago Galindo",
   "license": "MIT",

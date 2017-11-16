@@ -56,7 +56,7 @@ const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) => {
     throw new Error('La cédula ingresada no está registrada. Por favor verifique sus datos.')
   }
   if (!user.emailConfirmed) {
-    throw new Error('Su email no ha sido confirmado. Por favor revise su bandeja de entrada o regístrese nuevamente.')
+    throw new Error('Por favor confirme su email mediante el correo enviado al momento de su registro. En caso de no haberlo recibido contáctenos.')
   }
 
   const valid = await bcrypt.compare(contrasena, user.contrasena)

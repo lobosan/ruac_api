@@ -35,15 +35,15 @@ module.exports = {
     }
   },
   Mutation: {
-    signUp: async (parent, args, { models, EMAIL_SECRET }) => {
+    signUp: async (parent, { signUp }, { models, EMAIL_SECRET }) => {
       try {
         await verifyTransporter()
-        const hashedPassword = await bcrypt.hash(args.contrasena, 12)
-        const { _id } = await new models.Usuarios({ ...args, contrasena: hashedPassword }).save()
+        const hashedPassword = await bcrypt.hash(signUp.contrasena, 12)
+        const { _id } = await new models.Usuarios({ ...signUp, contrasena: hashedPassword }).save()
         const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
         transporter.use('compile', hbs(options))
         await transporter.sendMail({
-          to: args.email,
+          to: signUp.email,
           subject: 'Confirmar Email',
           template: 'welcome',
           attachments: [{ path: 'email/ruac.png', cid: 'ruac-logo@culturaypatrimonio.gob.ec' }],
@@ -52,9 +52,9 @@ module.exports = {
         return true
       } catch (error) {
         if (error.message.includes('cedula_1 dup key')) {
-          throw new Error('La cédula ingresada ya está registrada')
+          throw new Error('La cédula ingresada ya está registrada. Por favor verifique sus datos.')
         } else if (error.message.includes('email_1 dup key')) {
-          throw new Error('El email ingresado ya está registrado')
+          throw new Error('El email ingresado ya está registrado. Por favor verifique sus datos.')
         } else if (error.message.includes('Invalid login: 535 5.7.8')) {
           throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')
         } else {
@@ -72,7 +72,7 @@ module.exports = {
       try {
         await verifyTransporter()
         const user = await models.Usuarios.findOne({ cedula, email })
-        if (!user) throw new Error('Lo sentimos, no encontramos ningún usuario con la información ingresada. Por favor verifique sus datos.')
+        if (!user) throw new Error('Lo sentimos, la información ingresada no corresponde a un usuario registrado. Por favor verifique sus datos.')
         if (user._id.cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud. Por favor revise su cuenta de correo electrónico o contáctenos.')
         await models.Usuarios.findOneAndUpdate({ _id: user._id }, { $set: { cambiarContrasena: true } })
         const emailToken = await jwt.sign({ _id: user._id }, EMAIL_SECRET, { expiresIn: '1d' })
@@ -103,77 +103,19 @@ module.exports = {
         return true
       } catch (error) {
         if (error.message.includes('invalid token')) {
-          throw new Error('Los datos de usuario son incorrectos.')
+          throw new Error('Lo sentimos, los datos de usuario son incorrectos.')
         } else {
           throw new Error(error.message)
         }
       }
     },
-    updateProfile: async (parent, {
-      cedula,
-      tipoAfiliado,
-      email,
-      telefonoFijo,
-      telefonoCelular,
-      paisDomicilio,
-      provinciaDomicilio,
-      codigoProvinciaDomicilio,
-      cantonDomicilio,
-      codigoCantonDomicilio,
-      nombreArtistico,
-      tipoActorCultural,
-      actividadPrincipal,
-      actividadSecundaria,
-      postulacionesFinanciamiento,
-      otrasEntidadesApoyo,
-      obrasRegistradasIEPI,
-      perteneceOrgCultural,
-      logrosAlcanzados,
-      proyectosCulturales,
-      formacionCapacitacion,
-      webBlog,
-      youtube,
-      facebook,
-      twitter
-    }, { models }) => {
+    updateProfile: async (parent, args, { models }) => {
       try {
-        return models.Usuarios.findOneAndUpdate({ cedula }, {
-          $set: {
-            tipoAfiliado,
-            email,
-            telefonoFijo,
-            telefonoCelular,
-            paisDomicilio,
-            provinciaDomicilio,
-            codigoProvinciaDomicilio,
-            cantonDomicilio,
-            codigoCantonDomicilio,
-            nombreArtistico,
-            tipoActorCultural,
-            actividadPrincipal,
-            actividadSecundaria,
-            postulacionesFinanciamiento,
-            otrasEntidadesApoyo,
-            obrasRegistradasIEPI,
-            perteneceOrgCultural,
-            logrosAlcanzados,
-            proyectosCulturales,
-            formacionCapacitacion,
-            webBlog,
-            youtube,
-            facebook,
-            twitter
-          }
-        })
+        return models.Usuarios.findOneAndUpdate({ cedula: args.cedula }, { $set: { ...args } })
       } catch (error) {
-        if (error.message.includes('users.$cedula_1 dup key')) {
-          throw new Error('La cédula ingresada ya está registrada')
-        } else if (error.message.includes('users.$email_1 dup key')) {
-          throw new Error('El email ingresado ya está registrado')
-        } else if (error.message.includes('Invalid login: 535 5.7.8')) {
-          throw new Error('Lo sentimos, hubo un error de acceso a nuestro servidor de correo. Por favor inténtelo más tarde.')
-        } else {
-          throw new Error(error.message)
+        if (error) {
+          console.log(error)
+          throw new Error('Lo sentimos, hubo un error al actualizar su perfil. Por favor inténtelo más tarde.')
         }
       }
     }

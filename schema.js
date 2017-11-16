@@ -65,6 +65,19 @@ type Dpa {
   canton: String!
 }
 
+input SignUp {
+  cedula: String!,
+  contrasena: String!,
+  nombre: String!,
+  fechaNacimiento: String!,
+  lugarNacimiento: String!,
+  nacionalidad: String!,
+  sexo: String!,
+  estadoAfiliado: String,
+  titulosSenescyt: [String]!,
+  email: String!
+}
+
 type Query {
   loggedInUser: Usuario!
   logout: Boolean!
@@ -75,18 +88,7 @@ type Query {
 }
 
 type Mutation {
-  signUp (
-    cedula: String!,
-    contrasena: String!,
-    nombre: String!,
-    fechaNacimiento: String!,
-    lugarNacimiento: String!,
-    nacionalidad: String!,
-    sexo: String!,
-    estadoAfiliado: String,
-    titulosSenescyt: [String],
-    email: String!
-  ): Boolean!
+  signUp (signUp: SignUp!): Boolean!
 
   signIn (
     cedula: String!,
