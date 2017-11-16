@@ -38,12 +38,13 @@ module.exports = {
     signUp: async (parent, { signUp }, { models, EMAIL_SECRET }) => {
       try {
         await verifyTransporter()
-        const hashedPassword = await bcrypt.hash(signUp.contrasena, 12)
+        const { contrasena, email } = signUp
+        const hashedPassword = await bcrypt.hash(contrasena, 12)
         const { _id } = await new models.Usuarios({ ...signUp, contrasena: hashedPassword }).save()
         const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
         transporter.use('compile', hbs(options))
         await transporter.sendMail({
-          to: signUp.email,
+          to: email,
           subject: 'Confirmar Email',
           template: 'welcome',
           attachments: [{ path: 'email/ruac.png', cid: 'ruac-logo@culturaypatrimonio.gob.ec' }],
@@ -62,25 +63,27 @@ module.exports = {
         }
       }
     },
-    signIn: async (parent, { cedula, contrasena }, { models, SECRET, SECRET_2, res }) => {
-      const { token, refreshToken } = await trySignIn(cedula, contrasena, models, SECRET, SECRET_2)
+    signIn: async (parent, { signIn }, { models, SECRET, SECRET_2, res }) => {
+      const { token, refreshToken } = await trySignIn(signIn, models, SECRET, SECRET_2)
       res.cookie('token', token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
       res.cookie('refresh-token', refreshToken, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
       return { token, refreshToken }
     },
-    requestPasswordChange: async (parent, { cedula, email }, { models, EMAIL_SECRET }) => {
+    changePasswordRequest: async (parent, { changePasswordRequest }, { models, EMAIL_SECRET }) => {
       try {
         await verifyTransporter()
-        const user = await models.Usuarios.findOne({ cedula, email })
-        if (!user) throw new Error('Lo sentimos, la información ingresada no corresponde a un usuario registrado. Por favor verifique sus datos.')
-        if (user._id.cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud. Por favor revise su cuenta de correo electrónico o contáctenos.')
-        await models.Usuarios.findOneAndUpdate({ _id: user._id }, { $set: { cambiarContrasena: true } })
-        const emailToken = await jwt.sign({ _id: user._id }, EMAIL_SECRET, { expiresIn: '1d' })
+        const user = await models.Usuarios.findOne(changePasswordRequest)
+        if (!user) throw new Error('Lo sentimos, la información ingresada no corresponde a ningún usuario registrado. Por favor verifique sus datos.')
+        const { _id, cambiarContrasena } = user
+        if (cambiarContrasena) throw new Error('Lo sentimos, ya existe una solicitud en proceso. Por favor revise su cuenta de correo electrónico o contáctenos.')
+        await models.Usuarios.findOneAndUpdate({ _id }, { $set: { cambiarContrasena: true } })
+        const emailToken = await jwt.sign({ _id }, EMAIL_SECRET, { expiresIn: '1d' })
         transporter.use('compile', hbs(options))
+        const { email } = changePasswordRequest
         await transporter.sendMail({
           to: email,
           subject: 'Solicitud de Cambio de Contraseña',
-          template: 'requestPasswordChange',
+          template: 'changePasswordRequest',
           attachments: [{ path: 'email/ruac.png', cid: 'ruac-logo@culturaypatrimonio.gob.ec' }],
           context: { url: `http://172.17.6.74:3000/cambiar-contrasena/${emailToken}` }
         })
@@ -93,30 +96,31 @@ module.exports = {
         }
       }
     },
-    updatePassword: async (parent, { token, contrasena }, { models, EMAIL_SECRET }) => {
+    updatePassword: async (parent, { updatePassword }, { models, EMAIL_SECRET }) => {
       try {
-        const { _id } = jwt.verify(token, EMAIL_SECRET)
+        const { token, contrasena } = updatePassword
+        const { _id } = await jwt.verify(token, EMAIL_SECRET)
         const hashedPassword = await bcrypt.hash(contrasena, 12)
         await models.Usuarios.findOneAndUpdate({ _id }, {
           $set: { cambiarContrasena: false, contrasena: hashedPassword }
         })
         return true
       } catch (error) {
-        if (error.message.includes('invalid token')) {
+        if (error.message.includes('invalid signature')) {
           throw new Error('Lo sentimos, los datos de usuario son incorrectos.')
         } else {
           throw new Error(error.message)
         }
       }
     },
-    updateProfile: async (parent, args, { models }) => {
+    updateProfile: async (parent, { updateProfile }, { models }) => {
       try {
-        return models.Usuarios.findOneAndUpdate({ cedula: args.cedula }, { $set: { ...args } })
+        const { cedula } = updateProfile
+        await models.Usuarios.findOneAndUpdate({ cedula }, { $set: { ...updateProfile } })
+        return true
       } catch (error) {
-        if (error) {
-          console.log(error)
-          throw new Error('Lo sentimos, hubo un error al actualizar su perfil. Por favor inténtelo más tarde.')
-        }
+        console.log(error)
+        throw new Error('Lo sentimos, hubo un error al actualizar su perfil. Por favor inténtelo más tarde.')
       }
     }
   }

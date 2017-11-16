@@ -24,30 +24,17 @@ app.use(cookieParser())
 
 const addUser = async (req, res, next) => {
   const token = req.headers['x-token']
-  if (!token) {
-    return next()
-  }
-
+  if (!token) return next()
   const cookieToken = req.cookies.token
-  if (!cookieToken || token !== cookieToken) {
-    return next()
-  }
-
+  if (!cookieToken || token !== cookieToken) return next()
   try {
     const { user } = await jwt.verify(token, SECRET)
     req.user = user
   } catch (error) {
     const refreshToken = req.headers['x-refresh-token']
-
-    if (!refreshToken) {
-      return next()
-    }
-
+    if (!refreshToken) return next()
     const cookieRefreshToken = req.cookies['refresh-token']
-    if (!cookieRefreshToken || refreshToken !== cookieRefreshToken) {
-      return next()
-    }
-
+    if (!cookieRefreshToken || refreshToken !== cookieRefreshToken) return next()
     const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET_2)
     if (newTokens.token && newTokens.refreshToken) {
       res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')

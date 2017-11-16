@@ -78,6 +78,49 @@ input SignUp {
   email: String!
 }
 
+input SignIn {
+  cedula: String!,
+  contrasena: String!
+}
+
+input ChangePasswordRequest {
+  cedula: String!,
+  email: String!
+}
+
+input UpdatePassword {
+  token: String!,
+  contrasena: String!
+}
+
+input UpdateProfile {
+  cedula: String!,
+  tipoAfiliado: String!,
+  email: String!,
+  telefonoFijo: String,
+  telefonoCelular: String,
+  paisDomicilio: String!,
+  provinciaDomicilio: String,
+  codigoProvinciaDomicilio: String,
+  cantonDomicilio: String,
+  codigoCantonDomicilio: String,
+  nombreArtistico: String,
+  tipoActorCultural: String!,
+  actividadPrincipal: String!,
+  actividadSecundaria: String,
+  postulacionesFinanciamiento: [String],
+  otrasEntidadesApoyo: String,
+  obrasRegistradasIEPI: String!,
+  perteneceOrgCultural: String!,
+  logrosAlcanzados: String,
+  proyectosCulturales: String,
+  formacionCapacitacion: String,
+  webBlog: String,
+  youtube: String,
+  facebook: String,
+  twitter: String
+}
+
 type Query {
   loggedInUser: Usuario!
   logout: Boolean!
@@ -89,50 +132,10 @@ type Query {
 
 type Mutation {
   signUp (signUp: SignUp!): Boolean!
-
-  signIn (
-    cedula: String!,
-    contrasena: String!
-  ): AuthPayload!
-
-  requestPasswordChange (
-    cedula: String!,
-    email: String!
-  ): Boolean!
-
-  updatePassword (
-    token: String!,
-    contrasena: String!
-  ): Boolean!
-
-  updateProfile (
-    cedula: String!,
-    tipoAfiliado: String!,
-    email: String!,
-    telefonoFijo: String,
-    telefonoCelular: String,
-    paisDomicilio: String!,
-    provinciaDomicilio: String,
-    codigoProvinciaDomicilio: String,
-    cantonDomicilio: String,
-    codigoCantonDomicilio: String,
-    nombreArtistico: String,
-    tipoActorCultural: String!,
-    actividadPrincipal: String!,
-    actividadSecundaria: String,
-    postulacionesFinanciamiento: [String],
-    otrasEntidadesApoyo: String,
-    obrasRegistradasIEPI: String!,
-    perteneceOrgCultural: String!,
-    logrosAlcanzados: String,
-    proyectosCulturales: String,
-    formacionCapacitacion: String,
-    webBlog: String,
-    youtube: String,
-    facebook: String,
-    twitter: String
-  ): Usuario!
-
+  signIn (signIn: SignIn!): AuthPayload!
+  changePasswordRequest (changePasswordRequest: ChangePasswordRequest!): Boolean!
+  updatePassword (updatePassword: UpdatePassword!): Boolean!
+  updateProfile (updateProfile: UpdateProfile!): Boolean!
 }
 
 schema {

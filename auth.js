@@ -50,7 +50,7 @@ const refreshTokens = async (token, refreshToken, models, SECRET, SECRET_2) => {
   return { token: newToken, refreshToken: newRefreshToken, user }
 }
 
-const trySignIn = async (cedula, contrasena, models, SECRET, SECRET_2) => {
+const trySignIn = async ({ cedula, contrasena }, models, SECRET, SECRET_2) => {
   const user = await models.Usuarios.findOne({ cedula })
   if (!user) {
     throw new Error('La cédula ingresada no está registrada. Por favor verifique sus datos.')
