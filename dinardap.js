@@ -9,7 +9,7 @@ const interoperador = (paquete, cedula) => {
       parser: restler.parsers.xml,
       xml2js: { explicitArray: false, trim: true },
       rejectUnauthorized: false,
-      timeout: 7000,
+      timeout: 9000,
       data: `
         <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
           xmlns:ser="http://servicio.interoperadorws.interoperacion.dinardap.gob.ec/">
