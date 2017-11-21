@@ -25,7 +25,10 @@ type Usuario {
   tipoActorCultural: String
   actividadPrincipal: String
   actividadSecundaria: String
-  postulacionesFinanciamiento: [String]
+  fondosConcursables: String
+  auspicios: String
+  cncine: String
+  foncultura: String
   otrasEntidadesApoyo: String
   obrasRegistradasIEPI: String
   perteneceOrgCultural: String
@@ -98,7 +101,10 @@ input UpdateProfile {
   tipoActorCultural: String!
   actividadPrincipal: String!
   actividadSecundaria: String
-  postulacionesFinanciamiento: [String]
+  fondosConcursables: String
+  auspicios: String
+  cncine: String
+  foncultura: String
   otrasEntidadesApoyo: String
   obrasRegistradasIEPI: String!
   perteneceOrgCultural: String!

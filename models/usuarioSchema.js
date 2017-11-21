@@ -107,8 +107,20 @@ const usuarioSchema = new Schema({
     type: String,
     required: false
   },
-  postulacionesFinanciamiento: {
-    type: [String],
+  fondosConcursables: {
+    type: String,
+    required: false
+  },
+  auspicios: {
+    type: String,
+    required: false
+  },
+  cncine: {
+    type: String,
+    required: false
+  },
+  foncultura: {
+    type: String,
     required: false
   },
   otrasEntidadesApoyo: {
