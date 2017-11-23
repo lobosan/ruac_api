@@ -119,8 +119,12 @@ module.exports = {
         await models.Usuarios.findOneAndUpdate({ cedula }, { $set: { ...updateProfile } })
         return true
       } catch (error) {
-        console.log(error)
-        throw new Error('Lo sentimos, hubo un error al actualizar su perfil. Por favor inténtelo más tarde.')
+        if (error.message.includes('email_1 dup key')) {
+          throw new Error('El email ingresado ya está registrado. Por favor verifique sus datos.')
+        } else {
+          console.log(error)
+          throw new Error('Lo sentimos, hubo un error al actualizar su perfil. Por favor inténtelo más tarde.')
+        }
       }
     }
   }

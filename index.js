@@ -6,6 +6,8 @@ const { makeExecutableSchema } = require('graphql-tools')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
+const compression = require('compression')
+const { Engine } = require('apollo-engine')
 require('dotenv').config()
 
 const models = require('./models')
@@ -13,13 +15,34 @@ const typeDefs = require('./schema')
 const resolvers = require('./resolvers')
 const { refreshTokens } = require('./auth')
 
-const PORT = 3000
+const PORT = process.env.PORT
 const SECRET = process.env.SECRET
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN
+const PUBLIC_URL = process.env.PUBLIC_URL
+const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT
+const GRAPHIQL_ENDPOINT = process.env.GRAPHIQL_ENDPOINT
 const SECRET_2 = process.env.SECRET_2
 const EMAIL_SECRET = process.env.EMAIL_SECRET
+const ENGINE_API_KEY = process.env.ENGINE_API_KEY
 
 const app = express()
-app.use(cors({ origin: 'http://ruac2.culturaypatrimonio.gob.ec', credentials: true }))
+
+const engine = new Engine({
+  engineConfig: {
+    apiKey: ENGINE_API_KEY,
+    logging: {
+      level: process.env.NODE_ENV === 'production' ? 'WARN' : 'INFO'
+    }
+  },
+  graphqlPort: PORT,
+  endpoint: GRAPHQL_ENDPOINT,
+  dumpTraffic: true
+})
+
+engine.start()
+app.use(engine.expressMiddleware())
+
+app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }))
 app.use(cookieParser())
 
 const addUser = async (req, res, next) => {
@@ -40,8 +63,8 @@ const addUser = async (req, res, next) => {
       res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')
       res.set('x-token', newTokens.token)
       res.set('x-refresh-token', newTokens.refreshToken)
-      res.cookie('token', newTokens.token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
-      res.cookie('refresh-token', newTokens.refreshToken, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
+      res.cookie('token', newTokens.token, { maxAge: 0.5 * 60 * 60 * 1000, httpOnly: true })
+      res.cookie('refresh-token', newTokens.refreshToken, { maxAge: 0.5 * 60 * 60 * 1000, httpOnly: true })
     }
     req.user = newTokens.user
   }
@@ -60,11 +83,11 @@ app.get('/confirmacion/:token', async (req, res) => {
     console.log('Error al verificar email', error)
     verificado = false
   }
-  res.redirect(`http://ruac2.culturaypatrimonio.gob.ec/inicio-sesion?verificado=${verificado}`)
+  res.redirect(`${CLIENT_ORIGIN}/inicio-sesion?verificado=${verificado}`)
 })
 
 app.get('/cambiar-contrasena/:token', async (req, res) => {
-  const url = 'http://ruac2.culturaypatrimonio.gob.ec/cambiar-contrasena'
+  const url = `${CLIENT_ORIGIN}/cambiar-contrasena`
   try {
     let token = null
     await jwt.verify(req.params.token, EMAIL_SECRET)
@@ -76,17 +99,21 @@ app.get('/cambiar-contrasena/:token', async (req, res) => {
   }
 })
 
-app.use('/graphiql', graphiqlExpress({
-  endpointURL: '/graphql'
-}))
+app.use(compression({ threshold: 0 }))
 
-app.use('/graphql', json(), graphqlExpress((req, res) => ({
+app.use(GRAPHQL_ENDPOINT, json(), graphqlExpress((req, res) => ({
   schema: makeExecutableSchema({ typeDefs, resolvers }),
-  context: { models, SECRET, SECRET_2, EMAIL_SECRET, user: req.user, res }
+  context: { models, SECRET, SECRET_2, EMAIL_SECRET, user: req.user, res },
+  tracing: true,
+  cacheControl: true
 })))
+
+app.use(GRAPHIQL_ENDPOINT, graphiqlExpress({
+  endpointURL: GRAPHQL_ENDPOINT
+}))
 
 const server = createServer(app)
 
 server.listen(PORT, () => {
-  console.log(`GraphQL server listening on http://localhost:${PORT}/graphiql`)
+  console.log(`GraphQL server listening on ${PUBLIC_URL}${GRAPHIQL_ENDPOINT}`)
 })
