@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 
+const { MONGO_URI } = require('../config')
 const usuarioSchema = require('./usuarioSchema')
 const paisSchema = require('./paisSchema')
 const dpaSchema = require('./dpaSchema')
-const { MONGO_URI } = require('../config')
 
 mongoose.Promise = global.Promise
 

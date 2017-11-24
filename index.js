@@ -10,7 +10,7 @@ const { graphiqlExpress, graphqlExpress } = require('apollo-server-express')
 
 const models = require('./models')
 const schema = require('./graphql/schema')
-const { refreshTokens } = require('./auth')
+const { refreshTokens } = require('./lib/auth')
 const {
   PORT,
   ENGINE_API_KEY,
