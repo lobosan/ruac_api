@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken')
-const _ = require('lodash')
+const { pick } = require('lodash')
 const bcrypt = require('bcrypt')
 
-const createTokens = async (user, secret, secret2) => {
+const createTokens = async (user, SECRET, SECRET_2) => {
   const createToken = jwt.sign(
-    { user: _.pick(user, ['_id', 'cedula', 'role']) },
-    secret,
+    { user: pick(user, ['_id', 'cedula', 'role']) },
+    SECRET,
     { expiresIn: '1m' }
   )
 
   const createRefreshToken = jwt.sign(
-    { user: _.pick(user, '_id') },
-    secret2,
+    { user: pick(user, '_id') },
+    SECRET_2,
     { expiresIn: '7d' }
   )
 

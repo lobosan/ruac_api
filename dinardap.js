@@ -1,11 +1,13 @@
 const restler = require('restler')
-const _ = require('lodash')
+const { get } = require('lodash')
 
-const interoperador = (paquete, cedula) => {
+const { DINARDAP_USER, DINARDAP_PASS } = require('./config')
+
+const interoperador = async (paquete, cedula) => {
   return new Promise((resolve, reject) => {
     const request = restler.post('https://interoperabilidad.dinardap.gob.ec/interoperador?wsdl', {
-      username: process.env.DINARDAP_USER,
-      password: process.env.DINARDAP_PASS,
+      username: DINARDAP_USER,
+      password: DINARDAP_PASS,
       parser: restler.parsers.xml,
       xml2js: { explicitArray: false, trim: true },
       rejectUnauthorized: false,
@@ -43,10 +45,10 @@ const interoperador = (paquete, cedula) => {
         }
       } else {
         const rootPath = `['soap:Envelope']['soap:Body']['ns2:getFichaGeneralResponse']['return']['instituciones']`
-        let data = _.get(result, rootPath)
+        let data = get(result, rootPath)
         let institucion = {}
         if (data.nombre === 'SENESCYT') {
-          data = _.get(result, `${rootPath}['detalle']['items']`)
+          data = get(result, `${rootPath}['detalle']['items']`)
           let titulosSenescyt = []
           if (Array.isArray(data)) {
             data.forEach(obj => titulosSenescyt.push(obj.registros.valor))
@@ -56,7 +58,7 @@ const interoperador = (paquete, cedula) => {
             institucion['titulosSenescyt'] = titulosSenescyt
           }
         } else {
-          data = _.get(result, `${rootPath}['datosPrincipales']['registros']`)
+          data = get(result, `${rootPath}['datosPrincipales']['registros']`)
           if (Array.isArray(data)) {
             data.forEach(obj => {
               if (obj.campo === 'fechaNacimiento') {

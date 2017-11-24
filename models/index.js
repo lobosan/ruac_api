@@ -3,17 +3,18 @@ const mongoose = require('mongoose')
 const usuarioSchema = require('./usuarioSchema')
 const paisSchema = require('./paisSchema')
 const dpaSchema = require('./dpaSchema')
+const { MONGO_URI } = require('../config')
 
 mongoose.Promise = global.Promise
 
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(MONGO_URI, {
   keepAlive: true,
-  reconnectTries: Number.MAX_VALUE,
+  reconnectTries: 3,
   useMongoClient: true
 }).then(response => {
-  console.log('Connected to MongoLab instance')
+  console.log('Connected to MongoDB instance')
 }).catch(error => {
-  console.log('Error: Not able to connect to MongoLab', error)
+  console.log('Error: Not able to connect to MongoDB', error)
 })
 
 const models = {

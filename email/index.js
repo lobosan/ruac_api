@@ -1,12 +1,14 @@
 const nodemailer = require('nodemailer')
 
+const { EMAIL_USER, EMAIL_PASS } = require('../config')
+
 const transporter = nodemailer.createTransport({
   host: 'mail.culturaypatrimonio.gob.ec',
   port: 465,
   secure: true,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: EMAIL_USER,
+    pass: EMAIL_PASS
   }
 }, {
   from: '"RUAC" <ruac-informativo@culturaypatrimonio.gob.ec>'

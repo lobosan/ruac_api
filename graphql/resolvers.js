@@ -2,10 +2,10 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const hbs = require('nodemailer-express-handlebars')
 
-const dinardap = require('./dinardap')
-const { verifyTransporter, options, transporter } = require('./email')
-const { requiresAuth } = require('./permissions')
-const { trySignIn } = require('./auth')
+const dinardap = require('../dinardap')
+const { verifyTransporter, options, transporter } = require('../email')
+const { requiresAuth } = require('../permissions')
+const { trySignIn } = require('../auth')
 
 module.exports = {
   Query: {
