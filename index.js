@@ -1,9 +1,9 @@
 const { createServer } = require('http')
 const express = require('express')
 const cors = require('cors')
-const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const compression = require('compression')
 const { Engine } = require('apollo-engine')
 const { graphiqlExpress, graphqlExpress } = require('apollo-server-express')
@@ -133,17 +133,21 @@ function setupGraphQL (app) {
   }))
 }
 
-const app = express()
-setupEngine(app) // Engine proxy needs to be applied first
-setupCors(app)
-setupParsers(app)
-setupSession(app)
-setupCompression(app)
-setupRoutes(app)
-setupGraphQL(app)
+function main () {
+  const app = express()
+  setupEngine(app) // Engine proxy needs to be applied first
+  setupCors(app)
+  setupParsers(app)
+  setupSession(app)
+  setupCompression(app)
+  setupRoutes(app)
+  setupGraphQL(app)
 
-const server = createServer(app)
+  const server = createServer(app)
 
-server.listen(PORT, () => {
-  console.log(`GraphQL API Server listening on ${PUBLIC_URL}${GRAPHIQL_ENDPOINT}`)
-})
+  server.listen(PORT, () => {
+    console.log(`GraphQL API Server listening on ${PUBLIC_URL}${GRAPHIQL_ENDPOINT}`)
+  })
+}
+
+main()
