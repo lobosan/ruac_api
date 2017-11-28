@@ -76,19 +76,11 @@ const usuarioSchema = new Schema({
     required: false
   },
   provinciaDomicilio: {
-    type: String,
-    required: false
-  },
-  codigoProvinciaDomicilio: {
-    type: String,
+    type: Object,
     required: false
   },
   cantonDomicilio: {
-    type: String,
-    required: false
-  },
-  codigoCantonDomicilio: {
-    type: String,
+    type: Object,
     required: false
   },
   nombreArtistico: {

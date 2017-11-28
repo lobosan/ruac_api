@@ -70,8 +70,8 @@ function setupSession (app) {
         res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')
         res.set('x-token', newTokens.token)
         res.set('x-refresh-token', newTokens.refreshToken)
-        res.cookie('token', newTokens.token, { maxAge: 20 * 60 * 60 * 1000, httpOnly: true })
-        res.cookie('refresh-token', newTokens.refreshToken, { maxAge: 20 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie('token', newTokens.token, { maxAge: 300 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie('refresh-token', newTokens.refreshToken, { maxAge: 300 * 60 * 60 * 1000, httpOnly: true })
       }
       req.user = newTokens.user
     }
@@ -135,7 +135,7 @@ function setupGraphQL (app) {
 
 function main () {
   const app = express()
-  setupEngine(app) // Engine proxy needs to be applied first
+  setupEngine(app) // Engine proxy goes first
   setupCors(app)
   setupParsers(app)
   setupSession(app)

@@ -1,5 +1,10 @@
 module.exports = `
 
+type Dpa {
+  codigo: String
+  descripcion: String
+}
+
 type Usuario {
   _id: ID!
   cedula: String!
@@ -17,10 +22,8 @@ type Usuario {
   telefonoFijo: String
   telefonoCelular: String
   paisDomicilio: String
-  provinciaDomicilio: String
-  codigoProvinciaDomicilio: String
-  cantonDomicilio: String
-  codigoCantonDomicilio: String
+  provinciaDomicilio: Dpa
+  cantonDomicilio: Dpa
   nombreArtistico: String
   tipoActorCultural: String
   actividadPrincipal: String
@@ -51,13 +54,6 @@ type Pais {
   pais: String!
 }
 
-type Dpa {
-  codigoProvincia: String!
-  provincia: String!
-  codigoCanton: String!
-  canton: String!
-}
-
 input SignUp {
   cedula: String!
   contrasena: String!
@@ -86,6 +82,11 @@ input UpdatePassword {
   contrasena: String!
 }
 
+input DpaInput {
+  codigo: String
+  descripcion: String
+}
+
 input UpdateProfile {
   cedula: String!
   tipoAfiliado: String!
@@ -93,10 +94,8 @@ input UpdateProfile {
   telefonoFijo: String
   telefonoCelular: String
   paisDomicilio: String!
-  provinciaDomicilio: String
-  codigoProvinciaDomicilio: String
-  cantonDomicilio: String
-  codigoCantonDomicilio: String
+  provinciaDomicilio: DpaInput
+  cantonDomicilio: DpaInput
   nombreArtistico: String
   tipoActorCultural: String!
   actividadPrincipal: String!
