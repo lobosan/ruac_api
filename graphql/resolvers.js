@@ -65,8 +65,8 @@ module.exports = {
     },
     signIn: async (parent, { signIn }, { models, SECRET, SECRET_2, res }) => {
       const { token, refreshToken } = await trySignIn(signIn, models, SECRET, SECRET_2)
-      res.cookie('token', token, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
-      res.cookie('refresh-token', refreshToken, { maxAge: 60 * 60 * 24 * 7, httpOnly: true })
+      res.cookie('token', token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true })
+      res.cookie('refresh-token', refreshToken, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true })
       return { token, refreshToken }
     },
     changePasswordRequest: async (parent, { changePasswordRequest }, { models, EMAIL_SECRET }) => {
@@ -113,7 +113,7 @@ module.exports = {
         }
       }
     },
-    updateProfile: async (parent, { updateProfile }, { models }) => {
+    updateProfile: requiresAuth.createResolver(async (parent, { updateProfile }, { models }) => {
       try {
         const { cedula } = updateProfile
         await models.Usuarios.findOneAndUpdate({ cedula }, { $set: { ...updateProfile } })
@@ -126,6 +126,6 @@ module.exports = {
           throw new Error('Lo sentimos, hubo un error al actualizar su perfil. Por favor inténtelo más tarde.')
         }
       }
-    }
+    })
   }
 }

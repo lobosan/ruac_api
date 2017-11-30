@@ -61,6 +61,7 @@ function setupSession (app) {
       const { user } = await jwt.verify(token, SECRET)
       req.user = user
     } catch (error) {
+      // if token is expired then refresh tokens
       const refreshToken = req.headers['x-refresh-token']
       if (!refreshToken) return next()
       const cookieRefreshToken = req.cookies['refresh-token']
@@ -70,8 +71,8 @@ function setupSession (app) {
         res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token')
         res.set('x-token', newTokens.token)
         res.set('x-refresh-token', newTokens.refreshToken)
-        res.cookie('token', newTokens.token, { maxAge: 300 * 60 * 60 * 1000, httpOnly: true })
-        res.cookie('refresh-token', newTokens.refreshToken, { maxAge: 300 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie('token', newTokens.token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true })
+        res.cookie('refresh-token', newTokens.refreshToken, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true })
       }
       req.user = newTokens.user
     }
