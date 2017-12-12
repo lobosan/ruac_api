@@ -21,9 +21,6 @@ module.exports = {
       res.cookie('refresh-token', '')
       return true
     },
-    allUsers: async (parent, args, { models }) => {
-      return models.Usuarios.find()
-    },
     dinardap: async (parent, { cedula }) => {
       return dinardap(cedula)
     },
@@ -65,8 +62,8 @@ module.exports = {
     },
     signIn: async (parent, { signIn }, { models, SECRET, SECRET_2, res }) => {
       const { token, refreshToken } = await trySignIn(signIn, models, SECRET, SECRET_2)
-      res.cookie('token', token, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true })
-      res.cookie('refresh-token', refreshToken, { maxAge: 1 * 60 * 60 * 1000, httpOnly: true })
+      res.cookie('token', token, { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true })
+      res.cookie('refresh-token', refreshToken, { maxAge: 7 * 24 * 60 * 60 * 1000, httpOnly: true })
       return { token, refreshToken }
     },
     changePasswordRequest: async (parent, { changePasswordRequest }, { models, EMAIL_SECRET }) => {
@@ -99,7 +96,7 @@ module.exports = {
     updatePassword: async (parent, { updatePassword }, { models, EMAIL_SECRET }) => {
       try {
         const { token, contrasena } = updatePassword
-        const { _id } = await jwt.verify(token, EMAIL_SECRET)
+        const { _id } = jwt.verify(token, EMAIL_SECRET)
         const hashedPassword = await bcrypt.hash(contrasena, 12)
         await models.Usuarios.findOneAndUpdate({ _id }, {
           $set: { cambiarContrasena: false, contrasena: hashedPassword }

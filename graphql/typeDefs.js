@@ -119,7 +119,6 @@ input UpdateProfile {
 type Query {
   loggedInUser: Usuario!
   logout: Boolean!
-  allUsers: [Usuario!]!
   dinardap(cedula: String!): Usuario!
   paises: [Pais!]!
   dpa: [Dpa!]!
