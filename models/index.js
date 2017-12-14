@@ -1,13 +1,12 @@
 const mongoose = require('mongoose')
 
-const { MONGO_URI } = require('../config')
 const usuarioSchema = require('./usuarioSchema')
 const paisSchema = require('./paisSchema')
 const dpaSchema = require('./dpaSchema')
 
 mongoose.Promise = global.Promise
 
-mongoose.connect(MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   keepAlive: true,
   reconnectTries: 3,
   useMongoClient: true
