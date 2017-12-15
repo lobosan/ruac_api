@@ -9,13 +9,10 @@
 npm install pm2@latest -g
 
 # install dependencies
-yarn
+npm install
 
 # serve with hot reload at localhost:3030
-yarn start
-
-# monitor pm2
-pm2 monit
+npm start
 ```
 
 ## Useful commands
