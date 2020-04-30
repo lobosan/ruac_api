@@ -7,7 +7,9 @@
     "start": "nodemon --inspect index.js",
     "start-prod": "pm2 start index.js --name ruac_api --watch && pm2 monit",
     "stop-prod": "pm2 stop ruac_api",
-    "logs-prod": "pm2 logs"
+    "logs-prod": "pm2 logs",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "author": "Santiago Galindo",
   "license": "MIT",
@@ -30,7 +32,8 @@
     "nodemailer": "^4.3.0",
     "nodemailer-express-handlebars": "^2.0.0",
     "restler": "^3.4.0",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "eslint": "^3.19.0",
@@ -46,5 +49,6 @@
   "engines": {
     "node": ">= 8.9.3",
     "npm": ">= 5.5.1"
-  }
+  },
+  "snyk": true
 }
