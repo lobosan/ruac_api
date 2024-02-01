@@ -27,7 +27,7 @@
     "jsonwebtoken": "^8.1.0",
     "lodash": "^4.17.4",
     "mongoose": "^4.12.4",
-    "nodemailer": "^4.3.0",
+    "nodemailer": "^6.9.9",
     "nodemailer-express-handlebars": "^2.0.0",
     "restler": "^3.4.0",
     "xml2js": "^0.4.19"
